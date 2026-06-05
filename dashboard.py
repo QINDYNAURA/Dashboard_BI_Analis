@@ -380,8 +380,28 @@ with tab4:
         fig5_2 = apply_warm_layout(fig5_2)
         st.plotly_chart(fig5_2, use_container_width=True)
 
-# --- TAB 5: PROFIL RISIKO (FIX SINKRONISASI 100% — ANTI ITEM/GELAP) ---
+# ===========================================================================
+# --- TAB 5: PROFIL RISIKO (FIX FULL WARNA INSIGHT & KEMBALI KE ST.TABLE) ---
+# ===========================================================================
 with tab5:
+    # 🎨 INJECT CSS KHUSUS BIAR TULISAN INSIGHT DI BAWAH AUTO HITAM/COKELAT PEKAT
+    st.markdown("""
+        <style>
+        blockquote {
+            background-color: #F3E5D8 !important; 
+            border-left: 5px solid #E67E22 !important; 
+            padding: 15px 20px !important;
+            margin: 15px 0 !important;
+            border-radius: 4px !important;
+        }
+        blockquote p, blockquote li, blockquote span {
+            color: #2C1A11 !important; 
+            font-weight: 600 !important;
+            opacity: 1 !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     st.markdown("### ⚠️ Segmentasi & Profil Risiko Burnout Mahasiswa")
     st.markdown("##### Framework Klasifikasi Berbasis *Decision Tree Classifier* (Max Depth = 4)")
     
@@ -430,8 +450,7 @@ with tab5:
                 "0.000000 (0.00%)"
             ]
         })
-        # FIX: Gunakan st.dataframe agar otomatis beradaptasi dengan warna font & background tema
-        st.dataframe(importance_data, use_container_width=True)
+        st.table(importance_data)
         
     st.markdown("---")
     st.markdown("#### 🔍 Karakteristik Profil Hasil Prediksi Model (*Data Testing Profiling*)")
@@ -473,9 +492,9 @@ with tab5:
         ]
     })
     
-    # FIX TOTAL: Gunakan st.dataframe agar tabel cerah, tulisan kontras dan rapi terbaca dosen
-    st.dataframe(profil_risiko_table, use_container_width=True)
+    st.table(profil_risiko_table)
     
+    # Teks Insight di bawah ini dijamin bakal hitam pekat & kontras dibaca dosen!
     st.markdown("""
     > 💡 **Key Insight & Analisis Strategis Laporan BI:**
     > * **Lokomotif Utama Risiko:** Berdasarkan perhitungan matematika model, durasi pemakaian **`Weekly_GenAI_Hours` (88.62%)** adalah indikator tunggal yang mendominasi arah pembentukan stres mahasiswa dibandingkan faktor lainnya.
