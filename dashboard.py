@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import plotly.graph_objects as go
 from PIL import Image
 import os
 
@@ -9,13 +10,13 @@ import os
 # KONFIGURASI HALAMAN
 # ============================================================
 st.set_page_config(
-    page_title="Dampak AI pada Mahasiswa",
-    page_icon="🎓",
+    page_title="Dashboard BI - Dampak GenAI",
+    page_icon="📊",
     layout="wide"
 )
 
 # ============================================================
-# 🎨 REVISI CSS TOTAL — FIX BAR ATAS & TEKS TAB HITAM PEKAT
+# 🎨 CUSTOM CSS — FIX BAR ATAS, TAB, & KONTRAS TEXT
 # ============================================================
 st.markdown("""
     <style>
@@ -24,12 +25,12 @@ st.markdown("""
         background-color: #FDF6EC;
     }
     
-    /* 🚨 FIX BAR HITAM ATAS: Paksa Header Streamlit Paling Atas Ikut Warna Krem */
+    /* Fix Bar Hitam Atas */
     [data-testid="stHeader"] {
         background-color: #FDF6EC !important;
     }
     
-    /* Semua tulisan reguler, markdown, dan sub-judul di luar wajib HITAM/COKELAT TUA */
+    /* Semua tulisan reguler luar wajib Hitam/Cokelat Tua */
     .stApp p, .stApp span, .stApp label, .stApp h2, .stApp h3 {
         color: #2C1A11 !important;
         opacity: 1 !important;
@@ -41,18 +42,16 @@ st.markdown("""
         border-right: 2px solid #F3D9B1;
     }
     
-    /* Memaksa text di dalam Sidebar (Header & Filter Label) berwarna HITAM TEGAS */
     [data-testid="stSidebar"] h2, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
         color: #2C1A11 !important;
     }
     
-    /* 🎨 Mengubah Dropdown Menu (Warna Oranye Gelap) */
+    /* Mengubah Dropdown Menu */
     div[data-baseweb="select"] > div {
         background-color: #E67E22 !important;
         border: 1px solid #D35400 !important;
     }
     
-    /* Mengubah warna teks di dalam kotak dropdown yang terpilih jadi PUTIH biar kontras */
     div[data-baseweb="select"] span {
         color: #FFFFFF !important;
     }
@@ -65,17 +64,16 @@ st.markdown("""
         border-radius: 12px;
     }
     
-    /* 🎯 FIX TEKS TAB: Paksa Tulisan di Tombol Tab Menjadi Hitam/Cokelat Pekat Saat Belum Diklik */
     .stTabs [data-baseweb="tab"] {
         background-color: #FFFFFF;
         border-radius: 8px;
         padding: 8px 20px;
         font-weight: bold;
-        color: #2C1A11 !important; /* Diubah ke Hitam Pekat agar kelihatan jelas */
+        color: #2C1A11 !important;
         border: 1px solid #E6A23C;
     }
     
-    /* Efek Saat Tab Aktif Diklik (Berubah jadi Oranye, Tulisan Putih) */
+    /* Efek Saat Tab Aktif Diklik */
     .stTabs [aria-selected="true"] {
         background-color: #E67E22 !important;
         color: white !important;
@@ -85,7 +83,7 @@ st.markdown("""
         color: white !important;
     }
     
-    /* Warna Judul Utama H1 */
+    /* Judul H1 */
     h1 {
         color: #A04000 !important;
     }
@@ -131,7 +129,7 @@ def load_data():
 df = load_data()
 
 # ============================================================
-# SIDEBAR — FILTER INTERAKTIF & IDENTITAS LU
+# SIDEBAR — FILTER INTERAKTIF
 # ============================================================
 st.sidebar.header("🔧 Filter Analisis")
 st.sidebar.markdown("---")
@@ -154,7 +152,7 @@ st.sidebar.markdown("👤 **Analis Data Dashboard:**")
 st.sidebar.markdown("💡 **Qindy Naura**")
 st.sidebar.markdown("*Divisi Riset & Kebijakan | Konsultan BI*")
 
-# Jalankan Filter
+# Filter Data Engine
 df_filtered = df.copy()
 if selected_major != 'Semua':
     df_filtered = df_filtered[df_filtered['Major_Category'] == selected_major]
@@ -185,7 +183,24 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# TAB NAVIGASI
+# 🎯 FIX WARNA GRAFIK: LATAR BELAKANG KREM (#FDF6EC) & TEKS HITAM
+# ============================================================
+def apply_warm_layout(fig):
+    fig.update_layout(
+        plot_bgcolor='#FDF6EC',
+        paper_bgcolor='#FDF6EC',
+        margin=dict(l=40, r=40, t=50, b=40),
+        font=dict(
+            color='#2C1A11',
+            size=12
+        )
+    )
+    fig.update_xaxes(showgrid=True, gridcolor='#E5D8C5', tickfont=dict(color='#2C1A11'), titlefont=dict(color='#2C1A11'))
+    fig.update_yaxes(showgrid=True, gridcolor='#E5D8C5', tickfont=dict(color='#2C1A11'), titlefont=dict(color='#2C1A11'))
+    return fig
+
+# ============================================================
+# TAB NAVIGASI (FULL VERSION SEPERTI AWAL)
 # ============================================================
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📊 Overview Data", 
@@ -195,88 +210,96 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "⚠️ Profil Risiko"
 ])
 
-# 🎯 FIX ANGKA GRAFIK: Memaksa background putih & teks grafik hitam tajam
-def apply_white_layout(fig):
-    fig.update_layout(
-        plot_bgcolor='rgba(255,255,255,1)',
-        paper_bgcolor='rgba(255,255,255,1)',
-        margin=dict(l=40, r=40, t=50, b=40),
-        font=dict(
-            color='#2C1A11',
-            size=12
-        )
-    )
-    fig.update_xaxes(showgrid=True, gridcolor='#E5E5E5', zeroline=False)
-    fig.update_yaxes(showgrid=True, gridcolor='#E5E5E5')
-    return fig
-
 # TAB 1 — OVERVIEW
 with tab1:
     st.subheader("Distribusi Profil Mahasiswa")
     col1, col2 = st.columns(2)
     with col1:
         fig1 = px.pie(df_filtered, names='Major_Category', title='Proporsi Mahasiswa per Jurusan', color_discrete_sequence=px.colors.qualitative.Pastel)
-        fig1 = apply_white_layout(fig1)
+        fig1 = apply_warm_layout(fig1)
         st.plotly_chart(fig1, use_container_width=True)
     with col2:
         fig2 = px.histogram(df_filtered, x='Year_of_Study', title='Jumlah Mahasiswa per Jenjang', color_discrete_sequence=['#E67E22'])
-        fig2 = apply_white_layout(fig2)
+        fig2 = apply_warm_layout(fig2)
         st.plotly_chart(fig2, use_container_width=True)
 
-# TAB 2 — DAMPAK AI
+# TAB 2 — DAMPAK AI (FULL VERSION)
 with tab2:
     st.subheader("Analisis Penggunaan AI vs Performa Nilai (GPA)")
     
     st.info("""
-    📌 **Hasil Analisis PB1 — Intensitas AI vs Performa Academic**
+    📌 **Hasil Analisis PB1 — Intensitas AI vs Performa Akademik**
     - **Korelasi Pearson:** r = -0.0186 (Sangat Lemah, Negatif, Signifikan)
     - **Regresi Linear:** R² = 0.0003 → setiap +1 jam/minggu AI, GPA berubah -0.0011 poin
     - **Moderate User** memiliki rata-rata GPA tertinggi **(3.372)** dan GPA Gap terbesar **(+0.227)**
     - **Heavy User** justru memiliki GPA terendah **(3.320)** dan GPA Gap terkecil **(+0.173)**
-    - 💡 **Insight:** Ada titik optimal penggunaan AI di 5–15 jam/minggu yang justru mendukung performa akademik secara maksimal.
     """)
     
-    gpa_seg = df_filtered.groupby('AI_User_Segment', observed=True)['GPA_Gap'].mean().reset_index()
-    fig3 = px.bar(gpa_seg, x='AI_User_Segment', y='GPA_Gap', title='Rata-rata Perubahan GPA (GPA Gap) Berdasarkan Segmen User',
-                  color='AI_User_Segment', color_discrete_sequence=['#2ECC71', '#F1C40F', '#E74C3C'])
-    fig3 = apply_white_layout(fig3)
-    st.plotly_chart(fig3, use_container_width=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        gpa_seg = df_filtered.groupby('AI_User_Segment', observed=True)['GPA_Gap'].mean().reset_index()
+        fig3_1 = px.bar(gpa_seg, x='AI_User_Segment', y='GPA_Gap', title='Rata-rata Perubahan GPA (GPA Gap) per Segmen',
+                      color='AI_User_Segment', color_discrete_sequence=['#2ECC71', '#F1C40F', '#E74C3C'])
+        fig3_1 = apply_warm_layout(fig3_1)
+        st.plotly_chart(fig3_1, use_container_width=True)
+    with col2:
+        # SCATTER PLOT AWAL DIKEMBALIKAN
+        fig3_2 = px.scatter(df_filtered.sample(md=1000 if len(df_filtered)>1000 else len(df_filtered)), 
+                            x='Weekly_GenAI_Hours', y='Post_Semester_GPA', trendline='ols',
+                            title='Scatter Plot: Durasi Belajar AI vs Post GPA (Sampel 1000 data)',
+                            color_discrete_sequence=['#E67E22'])
+        fig3_2 = apply_warm_layout(fig3_2)
+        st.plotly_chart(fig3_2, use_container_width=True)
 
-# TAB 3 — KESEHATAN MENTAL
+# TAB 3 — KESEHATAN MENTAL (FULL VERSION)
 with tab3:
     st.subheader("Hubungan Kebijakan Kampus dengan Tingkat Stress")
     
     st.info("""
     📌 **Hasil Analisis PB3 — Kebijakan Institusi vs Performa & Burnout**
     - **Strictly_Ban** memiliki rata-rata GPA terendah **(3.333)** dan % High Burnout tertinggi **(29.8%)**
-    - **Actively_Encouraged** dan **Allowed_With_Citation** memiliki GPA lebih tinggi **(3.353)**
     - **Chi-Square:** χ² = 153.15, p-value = 0.000 → distribusi burnout berbeda signifikan antar kebijakan
-    - 💡 **Insight:** Kebijakan pelarangan AI secara total (Strict Ban) justru berkorelasi dengan tingkat burnout mahasiswa yang lebih tinggi.
     """)
     
-    fig4 = px.histogram(df_filtered, x='Institutional_Policy', color='Burnout_Risk_Level', 
-                        title='Tingkat Risiko Burnout Berdasarkan Kebijakan Kampus', barmode='group',
-                        color_discrete_map={'Low': '#2ECC71', 'Medium': '#F1C40F', 'High': '#E74C3C'})
-    fig4 = apply_white_layout(fig4)
-    st.plotly_chart(fig4, use_container_width=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        fig4_1 = px.histogram(df_filtered, x='Institutional_Policy', color='Burnout_Risk_Level', 
+                            title='Tingkat Risiko Burnout Berdasarkan Kebijakan Kampus', barmode='group',
+                            color_discrete_map={'Low': '#2ECC71', 'Medium': '#F1C40F', 'High': '#E74C3C'})
+        fig4_1 = apply_warm_layout(fig4_1)
+        st.plotly_chart(fig4_1, use_container_width=True)
+    with col2:
+        # BOX PLOT AWAL DIKEMBALIKAN
+        fig4_2 = px.box(df_filtered, x='Institutional_Policy', y='Anxiety_Level_During_Exams',
+                        title='Box Plot: Tingkat Kecemasan Ujian per Kebijakan Kampus',
+                        color_discrete_sequence=['#9B59B6'])
+        fig4_2 = apply_warm_layout(fig4_2)
+        st.plotly_chart(fig4_2, use_container_width=True)
 
-# TAB 4 — RETENSI PENGETAHUAN
+# TAB 4 — RETENSI PENGETAHUAN (FULL VERSION)
 with tab4:
     st.subheader("Korelasi Ketergantungan AI dengan Daya Ingat")
     
     st.info("""
     📌 **Hasil Analisis PB2 — AI Dependency vs Skill Retention**
     - **Korelasi Pearson:** r = -0.0843 (Sangat Lemah, Negatif, Signifikan)
-    - **Korelasi Spearman:** ρ = -0.0516 (Sangat Lemah, Negatif, Signifikan)
     - Skor dependency 1–3 memiliki rata-rata retention **75–76**, skor 8–10 turun ke **63–69**
-    - 💡 **Insight:** Semakin tinggi ketergantungan mahasiswa pada tools AI, ada kecenderungan skor retensi pemahaman materi kuliahnya melemah.
     """)
     
-    ret_dep = df_filtered.groupby('Perceived_AI_Dependency')['Skill_Retention_Score'].mean().reset_index()
-    fig5 = px.line(ret_dep, x='Perceived_AI_Dependency', y='Skill_Retention_Score', title='Tren Penurunan Skill Retention Berdasarkan Skor Ketergantungan AI', markers=True)
-    fig5.update_traces(line_color='#D35400')
-    fig5 = apply_white_layout(fig5)
-    st.plotly_chart(fig5, use_container_width=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        ret_dep = df_filtered.groupby('Perceived_AI_Dependency')['Skill_Retention_Score'].mean().reset_index()
+        fig5_1 = px.line(ret_dep, x='Perceived_AI_Dependency', y='Skill_Retention_Score', title='Tren Penurunan Skill Retention', markers=True)
+        fig5_1.update_traces(line_color='#D35400')
+        fig5_1 = apply_warm_layout(fig5_1)
+        st.plotly_chart(fig5_1, use_container_width=True)
+    with col2:
+        # HEATMAP / DENSITY CONTOUR DIKEMBALIKAN
+        fig5_2 = px.density_heatmap(df_filtered, x='Perceived_AI_Dependency', y='Skill_Retention_Score',
+                                    title='Kepadatan Distribusi Dependency vs Retention',
+                                    color_continuous_scale='Oranges')
+        fig5_2 = apply_warm_layout(fig5_2)
+        st.plotly_chart(fig5_2, use_container_width=True)
 
 # TAB 5 — PROFIL RISIKO
 with tab5:
@@ -285,9 +308,6 @@ with tab5:
     st.info("""
     📌 **Hasil Analisis PB5 — Profiling Burnout Risk (Decision Tree)**
     - **Akurasi Model:** 52% | Feature terpenting: **Weekly_GenAI_Hours (88.6%)**
-    - **Low Burnout (2.484 mhs):** Rata-rata 1.87 jam AI/minggu, Light User, mayoritas Business, Junior
-    - **Medium Burnout (5.582 mhs):** Rata-rata 6.59 jam AI/minggu, Moderate User, mayoritas STEM, Senior
-    - **High Burnout (1.933 mhs):** Rata-rata 22.34 jam AI/minggu, Heavy User, mayoritas STEM, Freshman
     - 💡 **Insight:** Weekly GenAI Hours adalah prediktor burnout terkuat. Mahasiswa dalam kategori Heavy User memiliki risiko mengalami stress/burnout akademis 3x lipat lebih tinggi.
     """)
     
