@@ -15,13 +15,18 @@ st.set_page_config(
 )
 
 # ============================================================
-# 🎨 REVISI CSS TOTAL — KONTRAS TAJAM & VISUALISASI BACKGROUND PUTIH
+# 🎨 REVISI CSS TOTAL — FIX BAR ATAS & TEKS TAB HITAM PEKAT
 # ============================================================
 st.markdown("""
     <style>
     /* Background Utama Krem-Oranye Soft */
     .stApp {
         background-color: #FDF6EC;
+    }
+    
+    /* 🚨 FIX BAR HITAM ATAS: Paksa Header Streamlit Paling Atas Ikut Warna Krem */
+    [data-testid="stHeader"] {
+        background-color: #FDF6EC !important;
     }
     
     /* Semua tulisan reguler, markdown, dan sub-judul di luar wajib HITAM/COKELAT TUA */
@@ -41,7 +46,7 @@ st.markdown("""
         color: #2C1A11 !important;
     }
     
-    /* 🎨 Mengubah Dropdown Menu (Warna Oranye Gelap, Bukan Item/Putih Silau) */
+    /* 🎨 Mengubah Dropdown Menu (Warna Oranye Gelap) */
     div[data-baseweb="select"] > div {
         background-color: #E67E22 !important;
         border: 1px solid #D35400 !important;
@@ -60,18 +65,23 @@ st.markdown("""
         border-radius: 12px;
     }
     
+    /* 🎯 FIX TEKS TAB: Paksa Tulisan di Tombol Tab Menjadi Hitam/Cokelat Pekat Saat Belum Diklik */
     .stTabs [data-baseweb="tab"] {
         background-color: #FFFFFF;
         border-radius: 8px;
         padding: 8px 20px;
         font-weight: bold;
-        color: #D35400 !important;
+        color: #2C1A11 !important; /* Diubah ke Hitam Pekat agar kelihatan jelas */
         border: 1px solid #E6A23C;
     }
     
-    /* Efek Saat Tab Aktif Diklik */
+    /* Efek Saat Tab Aktif Diklik (Berubah jadi Oranye, Tulisan Putih) */
     .stTabs [aria-selected="true"] {
         background-color: #E67E22 !important;
+        color: white !important;
+    }
+    
+    .stTabs [aria-selected="true"] span {
         color: white !important;
     }
     
@@ -185,13 +195,19 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "⚠️ Profil Risiko"
 ])
 
-# FUNGSI PEMBANTU UNTUK MEMBUAT BACKGROUND PLOTLY MENJADI PUTIH BERSIH
+# 🎯 FIX ANGKA GRAFIK: Memaksa background putih & teks grafik hitam tajam
 def apply_white_layout(fig):
     fig.update_layout(
         plot_bgcolor='rgba(255,255,255,1)',
         paper_bgcolor='rgba(255,255,255,1)',
-        margin=dict(l=40, r=40, t=50, b=40)
+        margin=dict(l=40, r=40, t=50, b=40),
+        font=dict(
+            color='#2C1A11',
+            size=12
+        )
     )
+    fig.update_xaxes(showgrid=True, gridcolor='#E5E5E5', zeroline=False)
+    fig.update_yaxes(showgrid=True, gridcolor='#E5E5E5')
     return fig
 
 # TAB 1 — OVERVIEW
@@ -212,7 +228,7 @@ with tab2:
     st.subheader("Analisis Penggunaan AI vs Performa Nilai (GPA)")
     
     st.info("""
-    📌 **Hasil Analisis PB1 — Intensitas AI vs Performa Akademik**
+    📌 **Hasil Analisis PB1 — Intensitas AI vs Performa Academic**
     - **Korelasi Pearson:** r = -0.0186 (Sangat Lemah, Negatif, Signifikan)
     - **Regresi Linear:** R² = 0.0003 → setiap +1 jam/minggu AI, GPA berubah -0.0011 poin
     - **Moderate User** memiliki rata-rata GPA tertinggi **(3.372)** dan GPA Gap terbesar **(+0.227)**
@@ -277,6 +293,6 @@ with tab5:
     
     if os.path.exists('pb5_decision_tree_final_kerangka.png'):
         img = Image.open('pb5_decision_tree_final_kerangka.png')
-        st.image(img, caption='Model Decision Tree - Klasifikasi Risiko Burnout', use_column_width=True)
+        st.image(img, caption='Model Decision Tree - Klasifikasi Risiko Burnout', use_container_width=True)
     else:
         st.warning("⚠️ File pb5_decision_tree_final_kerangka.png belum di-upload di GitHub utama.")
