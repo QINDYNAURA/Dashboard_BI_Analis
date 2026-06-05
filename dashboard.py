@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# 2. 🎨 CUSTOM CSS — FIX BAR ATAS, TAB, & KONTRAS TEXT TOTAL
+# 2. 🎨 CUSTOM CSS — FIX TOTAL TEKS TABEL & BLOCKQUOTE
 # ============================================================
 st.markdown("""
     <style>
@@ -34,6 +34,34 @@ st.markdown("""
     .stApp p, .stApp span, .stApp label, .stApp h1, .stApp h2, .stApp h3 {
         color: #2C1A11 !important;
         opacity: 1 !important;
+    }
+    
+    /* 🚨 FIX UTAMA UNTUK BLOCKQUOTE (KUTIPAN DI BAWAH TABEL) 🚨 */
+    blockquote {
+        background-color: #F3E5D8 !important; /* Kasih background biar kontras */
+        border-left: 5px solid #E67E22 !important; /* Garis oranye di kiri */
+        padding: 10px 15px !important;
+        margin: 10px 0 !important;
+        border-radius: 4px !important;
+    }
+    blockquote p {
+        color: #2C1A11 !important; /* Paksa tulisan di dalam kutipan jadi hitam pekat */
+        font-weight: 500 !important;
+        opacity: 1 !important;
+    }
+    
+    /* 🚨 FIX UTAMA UNTUK WARNA TULISAN DI DALAM TABEL 🚨 */
+    table {
+        color: #2C1A11 !important;
+    }
+    th {
+        background-color: #E67E22 !important;
+        color: white !important; /* Header tabel pakai tulisan putih di atas oranye biar kebaca */
+        font-weight: bold !important;
+    }
+    td {
+        color: #2C1A11 !important; /* Isi tabel paksa hitam pekat */
+        background-color: #FFFFFF !important;
     }
     
     /* Background Sidebar Filter */
@@ -184,51 +212,26 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# 7. 🎯 FIX MAKSIMAL ANTI-PUTIH: PAKSA WARNA TEKS JADI HITAM COKELAT PEKAT
+# 7. FIX MAKSIMAL PLOTLY
 # ============================================================
 def apply_warm_layout(fig):
     fig.update_layout(
         plot_bgcolor='#FDF6EC',
         paper_bgcolor='#FDF6EC',
         margin=dict(l=50, r=40, t=60, b=50),
-        # Paksa seluruh font global (Judul, Legenda, Nilai) jadi Hitam Cokelat Pekat
-        font=dict(
-            color='#2C1A11',
-            size=12
-        ),
-        # Paksa Judul Grafik agar Berwarna Hitam Pekat
-        title=dict(
-            font=dict(color='#2C1A11', size=14, family="Arial")
-        ),
-        # Paksa Teks Legenda biar ga memutih transparan
-        legend=dict(
-            font=dict(color='#2C1A11'),
-            title=dict(font=dict(color='#2C1A11'))
-        )
+        font=dict(color='#2C1A11', size=12),
+        title=dict(font=dict(color='#2C1A11', size=14, family="Arial")),
+        legend=dict(font=dict(color='#2C1A11'), title=dict(font=dict(color='#2C1A11')))
     )
-    # Paksa teks sumbu X dan Y (Angka & Judul Sumbu) jadi Hitam Cokelat Pekat
     try:
-        fig.update_xaxes(
-            showgrid=True, 
-            gridcolor='#E5D8C5', 
-            tickfont=dict(color='#2C1A11', size=11), 
-            titlefont=dict(color='#2C1A11', size=12, family="Arial")
-        )
-        fig.update_yaxes(
-            showgrid=True, 
-            gridcolor='#E5D8C5', 
-            tickfont=dict(color='#2C1A11', size=11), 
-            titlefont=dict(color='#2C1A11', size=12, family="Arial")
-        )
+        fig.update_xaxes(showgrid=True, gridcolor='#E5D8C5', tickfont=dict(color='#2C1A11', size=11), titlefont=dict(color='#2C1A11', size=12, family="Arial"))
+        fig.update_yaxes(showgrid=True, gridcolor='#E5D8C5', tickfont=dict(color='#2C1A11', size=11), titlefont=dict(color='#2C1A11', size=12, family="Arial"))
     except Exception:
         pass
-        
-    # Paksa anotasi teks tambahan di dalam chart (jika ada) biar gak putih
     try:
         fig.update_annotations(font=dict(color='#2C1A11'))
     except Exception:
         pass
-        
     return fig
 
 # ============================================================
