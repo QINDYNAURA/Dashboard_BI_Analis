@@ -194,7 +194,7 @@ if selected_policy != 'Semua':
 # 5. HEADER DASHBOARD UTAMA
 # ============================================================
 st.title("🎓 Dashboard Analisis Dampak GenAI Terhadap Mahasiswa")
-st.markdown("### Business Intelligence Platform ")
+st.markdown("### Business Intelligence Platform | Divisi Riset & Kebijakan")
 st.markdown("---")
 
 # ============================================================
@@ -212,7 +212,7 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# 7. 🎯 LAYOUT MULTI-THEME: FIX JARAK DAN SPASI SUMBU (PAD & MARGIN)
+# 7. 🎯 LAYOUT MULTI-THEME: FIX TEKS SUMBU, JARAK & SPASI (PAD & MARGIN)
 # ============================================================
 def apply_warm_layout(fig):
     text_color = '#2C1A11'
@@ -221,8 +221,6 @@ def apply_warm_layout(fig):
         template='none', 
         plot_bgcolor='rgba(211, 84, 0, 0.13)',  
         paper_bgcolor='rgba(211, 84, 0, 0.13)', 
-        
-        # 🚨 FIX SPASI KANVAS: Memperluas area bawah (b=100) dan kiri (l=70) agar teks punya ruang napas
         margin=dict(l=70, r=40, t=60, b=100),
         
         font=dict(
@@ -243,31 +241,30 @@ def apply_warm_layout(fig):
         )
     )
     
-    # 🚨 FIX JARAK TULISAN: Ditambah parameter pad=15 agar teks menjauh dari garis grafik
     try:
         fig.update_xaxes(
             showgrid=True, 
             gridcolor='rgba(211, 84, 0, 0.08)', 
             tickfont=dict(color=text_color, size=11, family="Arial"), 
             titlefont=dict(color=text_color, size=12, family="Arial", weight="bold"), 
-            title_standoff=20, # Jarak Judul Sumbu X (Year_of_Study) ke angka ticks
+            title_standoff=20, 
             linecolor=text_color, 
             ticks="outside",
             tickcolor=text_color,
             ticklen=6,
-            tickpad=12          # Jarak teks label (Freshman, Senior, dll) biar menjauh dari garis bawah
+            tickpad=12          
         )
         fig.update_yaxes(
             showgrid=True, 
             gridcolor='rgba(211, 84, 0, 0.08)', 
             tickfont=dict(color=text_color, size=11, family="Arial"), 
             titlefont=dict(color=text_color, size=12, family="Arial", weight="bold"), 
-            title_standoff=15, # Jarak Judul Sumbu Y (count) ke angka ticks
+            title_standoff=15, 
             linecolor=text_color,
             ticks="outside",
             tickcolor=text_color,
             ticklen=6,
-            tickpad=10          # Jarak teks angka (0, 2k, 4k, dll) biar menjauh ke kiri
+            tickpad=10          
         )
     except Exception:
         pass
@@ -290,12 +287,13 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "⚠️ Profil Risiko"
 ])
 
-# --- TAB 1: OVERVIEW DATA (FIX CROSS-FILTERING HIERARKIS) ---
+# --- TAB 1: OVERVIEW DATA (DIUBAH TOTAL MENJADI PERSENTASE %) ---
 with tab1:
-    st.markdown("### 📊 Overview Distribusi Populasi Mahasiswa")
-   
-    df_major_chart = df.copy()
+    st.markdown("### 📊 Overview Distribusi Populasi Mahasiswa (Proporsi %)")
+    st.caption("💡 *Sistem Cross-Filtering aktif. Angka sumbu Y otomatis dihitung dalam Persentase (%) terhadap total filter saat ini.*")
     
+    # Penyiapan basis data filter cross-filtering hierarkis
+    df_major_chart = df.copy()
     if selected_major != 'Semua':
         df_year_chart = df[df['Major_Category'] == selected_major]
     else:
@@ -310,6 +308,7 @@ with tab1:
     col_ov1, col_ov2, col_ov3 = st.columns(3)
     
     with col_ov1:
+        # Pie Chart bawaannya emang udah persen
         fig1 = px.pie(
             df_major_chart, 
             names='Major_Category', 
@@ -320,23 +319,39 @@ with tab1:
         st.plotly_chart(fig1, use_container_width=True)
         
     with col_ov2:
-        fig2 = px.histogram(
-            df_year_chart, 
+        # 🚨 UBAH HISTOGRAM JADI PERSEN BAR CHART
+        year_pct = df_year_chart['Year_of_Study'].value_counts(normalize=True).reset_index()
+        year_pct.columns = ['Year_of_Study', 'Persentase']
+        year_pct['Persentase'] = year_pct['Persentase'] * 100 # Konversi ke skala 0-100
+        
+        fig2 = px.bar(
+            year_pct, 
             x='Year_of_Study', 
-            title='Distribusi per Jenjang Studi', 
+            y='Persentase', 
+            title='Distribusi per Jenjang Studi (%)', 
             color_discrete_sequence=['#E67E22'],
-            category_orders={"Year_of_Study": ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"]}
+            category_orders={"Year_of_Study": ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"]},
+            labels={'Persentase': 'Persentase (%)'}
         )
+        fig2.update_yaxes(ticksuffix="%") # Kasih lambang % di angka sumbu Y
         fig2 = apply_warm_layout(fig2)
         st.plotly_chart(fig2, use_container_width=True)
         
     with col_ov3:
-        fig2_b = px.histogram(
-            df_policy_chart, 
+        # 🚨 UBAH HISTOGRAM KEBIJAKAN JADI PERSEN BAR CHART
+        policy_pct = df_policy_chart['Institutional_Policy'].value_counts(normalize=True).reset_index()
+        policy_pct.columns = ['Institutional_Policy', 'Persentase']
+        policy_pct['Persentase'] = policy_pct['Persentase'] * 100
+        
+        fig2_b = px.bar(
+            policy_pct, 
             x='Institutional_Policy', 
-            title='Distribusi Kebijakan Institusi', 
-            color_discrete_sequence=['#F1C40F']
+            y='Persentase', 
+            title='Distribusi Kebijakan Institusi (%)', 
+            color_discrete_sequence=['#F1C40F'],
+            labels={'Persentase': 'Persentase (%)'}
         )
+        fig2_b.update_yaxes(ticksuffix="%")
         fig2_b = apply_warm_layout(fig2_b)
         st.plotly_chart(fig2_b, use_container_width=True)
 
@@ -356,7 +371,6 @@ with tab2:
     with col1:
         gpa_seg = df_filtered.groupby('AI_User_Segment', observed=True)['GPA_Gap'].mean().reset_index()
         
-        # FIX LOGIKA: Paksa urutan dan petakan warna yang konsisten dengan psikologi warna
         fig3_1 = px.bar(
             gpa_seg, 
             x='AI_User_Segment', 
@@ -364,11 +378,11 @@ with tab2:
             title='Rata-rata Perubahan GPA (GPA Gap) per Segmen',
             color='AI_User_Segment', 
             color_discrete_map={
-                'Light': '#2ECC71',     # Hijau (Aman/Normal)
-                'Moderate': '#F1C40F',  # Kuning (Optimal/Paling Untung)
-                'Heavy': '#E74C3C'     # Merah (Bahaya/Jeblok)
+                'Light': '#2ECC71',     
+                'Moderate': '#F1C40F',  
+                'Heavy': '#E74C3C'     
             },
-            category_orders={"AI_User_Segment": ["Light", "Moderate", "Heavy"]} # Paksa urut dari kiri ke kanan
+            category_orders={"AI_User_Segment": ["Light", "Moderate", "Heavy"]} 
         )
         fig3_1 = apply_warm_layout(fig3_1)
         st.plotly_chart(fig3_1, use_container_width=True)
@@ -381,7 +395,7 @@ with tab2:
         fig3_2 = apply_warm_layout(fig3_2)
         st.plotly_chart(fig3_2, use_container_width=True)
 
-# --- TAB 3: KESEHATAN MENTAL ---
+# --- TAB 3: KESEHATAN MENTAL (DIUBAH JADI PERSENTASE RELATIF %) ---
 with tab3:
     st.markdown("### Hubungan Kebijakan Kampus dengan Tingkat Stress")
     
@@ -393,9 +407,26 @@ with tab3:
     
     col1, col2 = st.columns(2)
     with col1:
-        fig4_1 = px.histogram(df_filtered, x='Institutional_Policy', color='Burnout_Risk_Level', 
-                            title='Tingkat Risiko Burnout Berdasarkan Kebijakan Kampus', barmode='group',
-                            color_discrete_map={'Low': '#2ECC71', 'Medium': '#F1C40F', 'High': '#E74C3C'})
+        # 🚨 UBAH TOTAL COUNT GRUP BURNOUT JADI PERSEN BERDASARKAN TOTAL PER KEBIJAKAN
+        mental_pct = df_filtered.groupby(['Institutional_Policy', 'Burnout_Risk_Level']).size().reset_index(name='count')
+        # Hitung total per kebijakan untuk membagi
+        policy_totals = df_filtered['Institutional_Policy'].value_counts().reset_index()
+        policy_totals.columns = ['Institutional_Policy', 'total_policy']
+        # Gabung dan hitung persen
+        mental_pct = pd.merge(mental_pct, policy_totals, on='Institutional_Policy')
+        mental_pct['Persentase'] = (mental_pct['count'] / mental_pct['total_policy']) * 100
+        
+        fig4_1 = px.bar(
+            mental_pct, 
+            x='Institutional_Policy', 
+            y='Persentase',
+            color='Burnout_Risk_Level', 
+            title='Proporsi Risiko Burnout Berdasarkan Kebijakan Kampus (%)', 
+            barmode='group',
+            color_discrete_map={'Low': '#2ECC71', 'Medium': '#F1C40F', 'High': '#E74C3C'},
+            labels={'Persentase': 'Persentase (%)'}
+        )
+        fig4_1.update_yaxes(ticksuffix="%")
         fig4_1 = apply_warm_layout(fig4_1)
         st.plotly_chart(fig4_1, use_container_width=True)
     with col2:
