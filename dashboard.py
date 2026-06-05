@@ -496,90 +496,102 @@ with tab4:
         fig5_2 = apply_warm_layout(fig5_2)
         st.plotly_chart(fig5_2, use_container_width=True)
 
-# --- TAB 5: PROFIL RISIKO (SINKRONISASI DECISION TREE & BI REPORT) ---
+# --- TAB 5: PROFIL RISIKO (MURNI KARAKTERISTIK PROFIL - BERSIH & TO THE POINT) ---
 with tab5:
     st.markdown("### ⚠️ Segmentasi & Profil Risiko Burnout Mahasiswa")
     st.markdown("##### Framework Klasifikasi Berbasis *Decision Tree Classifier* (Max Depth = 4)")
     
     st.info("""
-    📌 **Evaluasi Keandalan Model (Decision Tree):**
-    * Model berhasil menyeimbangkan deteksi untuk seluruh kelas (*High, Low, Medium*) dengan **Akurasi Global 52%** pada 9.999 data testing.
-    * Kelas **Medium** memiliki keandalan tinggi dengan nilai *Recall* mencapai **63%** (Berhasil menangkap 4.228 sampel mahasiswa secara akurat).
+    📌 **Evaluasi Keandalan Klasifikasi Model:**
+    * **Akurasi Global:** Model berhasil mengklasifikasikan tingkat burnout dengan akurasi **52%** pada data testing.
+    * **Recall Tertinggi (63%):** Model sangat sensitif dan terbukti paling andal dalam mengidentifikasi kelompok mahasiswa di zona **Medium Burnout**.
     """)
     
-    # --- sub-tab atau layout kolom ---
+    # Kolom Atas: Gambar Pohon vs Tabel Feature Importance Riil
     col_tree1, col_tree2 = st.columns([3, 2])
     
     with col_tree1:
         st.markdown("#### 🌲 Pohon Keputusan Klasifikasi (*Decision Tree Structure*)")
-        # Memanggil gambar pohon yang sudah di-generate otomatis oleh script laptop lu
         nama_gambar = 'pb5_decision_tree_final_kerangka.png'
         if os.path.exists(nama_gambar):
             image = Image.open(nama_gambar)
             st.image(image, caption="Struktur Aturan Split Decision Tree (Sweet Spot: Max Depth = 4)", use_container_width=True)
         else:
-            st.warning(f"⚠️ Gambar '{nama_gambar}' tidak ditemukan di folder aplikasi. Pastikan lu udah run script modeling di laptop atau file gambar sudah di-upload ke GitHub.")
+            st.warning(f"⚠️ Gambar '{nama_gambar}' belum ter-upload di folder GitHub. Pastikan file gambar dari laptop lu sudah dimasukkan ke folder dashboard.")
 
     with col_tree2:
         st.markdown("#### 📊 Rangkuman Fitur Paling Berpengaruh (*Feature Importance*)")
-        st.markdown("Indikator utama yang paling menentukan tingkat stres dan kejenuhan mahasiswa:")
+        st.markdown("Bobot pengaruh riil variabel dari model *Decision Tree* lu:")
         
-        # Tabel Feature Importance buatan dari hasil model scikit-learn lu
+        # SINKRONISASI 100% DENGAN VARIABEL PENTING LU
         importance_data = pd.DataFrame({
-            "Indikator/Fitur": ["Weekly_GenAI_Hours", "Anxiety_Level_During_Exams", "Perceived_AI_Dependency", "Traditional_Study_Hours", "Major_Category_STEM"],
-            "Skor Kontribusi (%)": ["42.15%", "28.40%", "15.12%", "9.83%", "4.50%"]
+            "Variabel / Fitur": [
+                "Weekly_GenAI_Hours", 
+                "Year_of_Study_Graduate", 
+                "Institutional_Policy_Strict_Ban", 
+                "Year_of_Study_Senior", 
+                "Pre_Semester_GPA", 
+                "Post_Semester_GPA", 
+                "Perceived_AI_Dependency",
+                "Anxiety_Level_During_Exams"
+            ],
+            "Bobot Kontribusi (Importance)": [
+                "0.886175 (88.62%)", 
+                "0.065356 (6.54%)", 
+                "0.030942 (3.09%)", 
+                "0.010440 (1.04%)", 
+                "0.003067 (0.31%)", 
+                "0.002522 (0.25%)", 
+                "0.001500 (0.15%)", 
+                "0.000000 (0.00%)"
+            ]
         })
         st.table(importance_data)
         
     st.markdown("---")
-    st.markdown("#### 🔍 Karakteristik & Profil Riil Hasil Prediksi Model (*Data Testing Profiling*)")
-    st.markdown("Berikut adalah rincian profil mahasiswa berdasarkan hasil segmentasi otomatis aturan pohon keputusan:")
+    st.markdown("#### 🔍 Karakteristik Profil Hasil Prediksi Model (*Data Testing Profiling*)")
+    st.markdown("Tabel komparasi di bawah ini merangkum pola perilaku mahasiswa riil pada masing-masing segmen hasil klasifikasi model:")
     
-    # Membuat tabel komparasi profil risiko yang ciamik, rapi, dan kontras (Bebas Eror Looping!)
+    # DATA PROFILING COMPILATION BERSIH TANPA JUMLAH ORANG / SUPPORT
     profil_risiko_table = pd.DataFrame({
-        "Karakteristik Mahasiswa": [
-            "Jumlah Mahasiswa (Sampel)", 
+        "Indikator / Karakteristik": [
             "Rata-rata Jam GenAI / Minggu", 
             "Rata-rata Jam Belajar Tradisional", 
             "Rata-rata Skor Anxiety Ujian", 
             "Fakultas / Jurusan Dominan", 
             "Tingkat Angkatan Terbanyak", 
-            "Segmen Pengguna AI"
+            "Segmentasi Pengguna AI"
         ],
         "🟢 LOW RISK": [
-            "3,274 orang", 
-            "2.85 Jam", 
-            "14.20 Jam", 
-            "3.10 / 10", 
-            "Humanities", 
-            "Freshman", 
+            "1.87 Jam", 
+            "11.82 Jam", 
+            "3.80 / 10", 
+            "Business", 
+            "Junior", 
             "Light User"
         ],
         "🟡 MEDIUM RISK": [
-            "4,228 orang", 
-            "8.45 Jam", 
-            "10.15 Jam", 
-            "5.25 / 10", 
-            "Social Sciences", 
-            "Sophomore / Junior", 
+            "6.59 Jam", 
+            "11.40 Jam", 
+            "4.05 / 10", 
+            "STEM", 
+            "Senior", 
             "Moderate User"
         ],
         "🔴 HIGH RISK": [
-            "2,497 orang", 
-            "24.60 Jam", 
-            "4.30 Jam", 
-            "8.75 / 10", 
-            "STEM (Sains & Tek)", 
-            "Senior / Graduate", 
+            "22.34 Jam", 
+            "9.97 Jam", 
+            "5.46 / 10", 
+            "STEM", 
+            "Freshman (Maba)", 
             "Heavy User"
         ]
     })
     
     st.table(profil_risiko_table)
     
-    # Keterangan pelengkap analisis (Blockquote) yang sudah diperbaiki warnanya di CSS atas
     st.markdown("""
-    > 💡 **Rekomendasi Strategis Intervensi Kampus (Divisi Kemahasiswaan):**
-    > * **Kelompok High Risk (Heavy User):** Wajib diberikan program *digital detox* atau pembatasan kuota penggunaan tools AI di lingkungan lab, karena tingginya jam GenAI (>24 jam/minggu) berbanding lurus dengan anjloknya waktu belajar tradisional dan tingginya kecemasan saat ujian.
-    > * **Kelompok Medium Risk (Moderate User):** Merupakan zona aman optimal (*Sweet Spot*). Penggunaan AI di angka ~8 jam/minggu membantu efisiensi tugas tanpa mengorbankan kesehatan mental secara ekstrem.
+    > 💡 **Key Insight & Analisis Strategis Laporan BI:**
+    > * **Lokomotif Utama Risiko:** Berdasarkan perhitungan matematika model, durasi pemakaian **`Weekly_GenAI_Hours` (88.62%)** adalah indikator tunggal yang mendominasi arah pembentukan stres mahasiswa dibandingkan faktor lainnya.
+    > * **Anomali Transisi Maba STEM (High Risk):** Temuan krusial menunjukkan kelompok *High Risk* secara dominan diisi oleh mahasiswa baru (**Freshman**) di bidang **STEM** dengan durasi penggunaan GenAI yang sangat ekstrem (**22.34 jam/minggu**). Hal ini mengindikasikan adanya beban transisi kuliah teknik/sains yang berat, sehingga maba mengompensasikannya secara berlebihan dengan asisten AI yang justru memicu kecemasan ujian lebih tinggi (skor 5.46/10).
     """)
