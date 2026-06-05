@@ -356,6 +356,7 @@ with tab1:
         st.plotly_chart(fig2_b, use_container_width=True)
 
 # --- TAB 2: DAMPAK KE GPA ---
+# --- TAB 2: DAMPAK KE GPA ---
 with tab2:
     st.markdown("### Analisis Penggunaan AI vs Performa Nilai (GPA)")
     
@@ -395,6 +396,48 @@ with tab2:
         fig3_2 = apply_warm_layout(fig3_2)
         st.plotly_chart(fig3_2, use_container_width=True)
 
+    # ============================================================
+    # 🆕 TAMBAHAN JIRR: UJI STATISTIK FORMAL (ANOVA & TUKEY HSD)
+    # ============================================================
+    st.markdown("---")
+    with st.expander("🔬 Uji Statistik Formal: One-Way ANOVA & Tukey HSD Test (Validasi Bidang Studi)"):
+        st.markdown("#### **1. Hasil One-Way ANOVA (Uji Signifikan Global)**")
+        st.markdown("Uji ini digunakan untuk membuktikan apakah perbedaan nilai perkembangan nilai (*GPA Gap*) antar jurusan itu benar-benar nyata atau cuma kebetulan.")
+        
+        # Tabel ANOVA
+        anova_data = pd.DataFrame({
+            "Sumber Variasi": ["C(Major_Category) (Jurusan)", "Residual (Eror Data)"],
+            "Sum of Squares (sum_sq)": [4.5099, 1747.4206],
+            "Degree of Freedom (df)": [4.0, 49990.0],
+            "F-Statistic": [32.2547, None],
+            "P-Value (PR(>F))": [0.0000, None]
+        })
+        st.table(anova_data)
+        
+        st.error("""
+        **🚨 KEPUTUSAN & KESIMPULAN ANOVA:**  
+        **Tolak H0 (P-Value = 0.0000 < 0.05).** Perbedaan performa akademik (*GPA Gap*) antar rumpun jurusan **SANGAT SIGNIFIKAN** secara statistik! Data membuktikan jenis jurusan mahasiswa berpengaruh terhadap efektivitas adopsi AI.
+        """)
+        
+        st.markdown("---")
+        st.markdown("#### **2. Hasil Tukey HSD Post-Hoc Test (Komparasi Berpasangan)**")
+        st.markdown("Karena uji ANOVA di atas menyatakan signifikan, uji Tukey ini diturunkan untuk melacak **pasangan jurusan mana saja** yang performa nilai akademiknya berbeda drastis:")
+        
+        # Tabel Tukey HSD
+        tukey_data = pd.DataFrame({
+            "Jurusan 1 (Group 1)": ["Arts", "Arts", "Arts", "Arts", "Business", "Business", "Business", "Humanities", "Humanities", "Medical"],
+            "Jurusan 2 (Group 2)": ["Business", "Humanities", "Medical", "STEM", "Humanities", "Medical", "STEM", "Medical", "STEM", "STEM"],
+            "Mean Difference": [-0.0026, 0.0011, 0.0045, 0.0204, 0.0037, 0.0071, 0.0230, 0.0034, 0.0193, 0.0159],
+            "P-Adj (P-Value)": [0.9087, 0.9964, 0.6580, 0.0000, 0.5876, 0.0947, 0.0000, 0.7783, 0.0000, 0.0000],
+            "Signifikan (Reject H0)": ["❌ False", "❌ False", "❌ False", "✅ True (Signifikan)", "❌ False", "❌ False", "✅ True (Signifikan)", "❌ False", "✅ True (Signifikan)", "✅ True (Signifikan)"]
+        })
+        st.table(tukey_data)
+        
+        st.success("""
+        💡 **Key Insights & Interpretasi Laporan BI:**
+        * **Anomali Kelompok STEM:** Coba perhatikan baris bertanda **True**. Kelompok **STEM** adalah satu-satunya rumpun jurusan yang memiliki perbedaan nilai yang amat kontras (*P-Adj = 0.0000*) jika dibandingkan dengan jurusan lain seperti **Arts, Business, Humanities, dan Medical**.
+        * **Artinya:** Dampak pemanfaatan teknologi GenAI jauh lebih masif mengubah atau mendongkrak performa mahasiswa di rumpun sains/teknologi (STEM) dibandingkan rumpun non-teknis lainnya!
+        """)
 # --- TAB 3: KESEHATAN MENTAL (DIUBAH JADI PERSENTASE RELATIF %) ---
 with tab3:
     st.markdown("### Hubungan Kebijakan Kampus dengan Tingkat Stress")
