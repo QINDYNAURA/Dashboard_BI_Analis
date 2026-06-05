@@ -245,48 +245,58 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "⚠️ Profil Risiko"
 ])
 
-# --- TAB 1: OVERVIEW DATA ---
-# --- TAB 1: OVERVIEW DATA ---
-with tab1:
-    st.markdown("### 📊 Overview Distribusi Populasi Mahasiswa (Global)")
-    st.caption("💡 *Catatan: Grafik di bawah ini menampilkan total distribusi keseluruhan data mahasiswa dan sengaja dibuat statis (tidak terpengaruh filter sidebar) sebagai baseline acuan.*")
-    
-    # Membuat 3 kolom sejajar agar layout rapi dan scannable
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        # Menggunakan 'df' (bukan df_filtered) agar data bidang studi tidak berubah saat difilter
-        fig1 = px.pie(
-            df, 
-            names='Major_Category', 
-            title='Distribusi per Bidang Studi', 
-            color_discrete_sequence=px.colors.qualitative.Pastel
-        )
-        fig1 = apply_warm_layout(fig1)
-        st.plotly_chart(fig1, use_container_width=True)
+# ============================================================
+# 7. 🎯 FIX KONTRAST MAKSIMAL: BACKGROUND ORANYE GELAP + TEKS TERANG
+# ============================================================
+def apply_warm_layout(fig):
+    fig.update_layout(
+        # Mengubah latar belakang bagian dalam dan luar grafik menjadi Oranye Gelap
+        plot_bgcolor='#D35400',  /* Oranye Gelap (Burnt Orange) */
+        paper_bgcolor='#D35400', 
+        margin=dict(l=50, r=40, t=60, b=50),
         
-    with col2:
-        # Menggunakan 'df' (bukan df_filtered) agar data jenjang tidak berubah saat difilter
-        fig2 = px.histogram(
-            df, 
-            x='Year_of_Study', 
-            title='Distribusi per Jenjang Studi', 
-            color_discrete_sequence=['#E67E22'],
-            category_orders={"Year_of_Study": ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"]} # Biar urut dari maba
-        )
-        fig2 = apply_warm_layout(fig2)
-        st.plotly_chart(fig2, use_container_width=True)
+        # Paksa seluruh font global (Judul, Legenda) menjadi Putih Terang biar kontras
+        font=dict(
+            color='#FFFFFF',
+            size=12
+        ),
         
-    with col3:
-        # Menambahkan grafik baru: Distribusi Kebijakan Institusi (menggunakan 'df' agar selaras)
-        fig2_b = px.histogram(
-            df, 
-            x='Institutional_Policy', 
-            title='Distribusi Kebijakan Institusi', 
-            color_discrete_sequence=['#D35400']
+        # Paksa Judul Grafik agar Berwarna Krem Muda/Putih Terang
+        title=dict(
+            font=dict(color='#FFF3E0', size=14, family="Arial", weight="bold")
+        ),
+        
+        # Paksa Teks Legenda biar gak pudar dan kontras di atas oranye gelap
+        legend=dict(
+            font=dict(color='#FFFFFF'),
+            title=dict(font=dict(color='#FFF3E0'))
         )
-        fig2_b = apply_warm_layout(fig2_b)
-        st.plotly_chart(fig2_b, use_container_width=True)
+    )
+    
+    # Paksa angka-angka sumbu (Ticks) & Judul Sumbu X/Y jadi Putih Terang
+    try:
+        fig.update_xaxes(
+            showgrid=True, 
+            gridcolor='#E67E22', # Garis grid pakai warna oranye yang lebih terang sedikit
+            tickfont=dict(color='#FFFFFF', size=11, family="Arial"), # Angka sumbu putih bersih
+            titlefont=dict(color='#FFF3E0', size=12, family="Arial", weight="bold") # Judul sumbu krem terang
+        )
+        fig.update_yaxes(
+            showgrid=True, 
+            gridcolor='#E67E22', 
+            tickfont=dict(color='#FFFFFF', size=11, family="Arial"), 
+            titlefont=dict(color='#FFF3E0', size=12, family="Arial", weight="bold")
+        )
+    except Exception:
+        pass
+        
+    # Paksa anotasi teks tambahan di dalam chart (jika ada) biar ikutan putih terang
+    try:
+        fig.update_annotations(font=dict(color='#FFFFFF'))
+    except Exception:
+        pass
+        
+    return fig
 
 # --- TAB 2: DAMPAK KE GPA ---
 with tab2:
