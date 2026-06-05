@@ -212,38 +212,30 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# 7. 🎯 LAYOUT MULTI-THEME: PAKSA TOTAL TEXT SUMBU MENJADI HITAM PEKAT
+# 7. 🎯 LAYOUT MULTI-THEME: FIX JARAK DAN SPASI SUMBU (PAD & MARGIN)
 # ============================================================
 def apply_warm_layout(fig):
-    # Paksa warna teks dasar yang akan digunakan
     text_color = '#2C1A11'
     
     fig.update_layout(
-        # Menggunakan template basic bawaan plotly agar tidak ditimpa font putih oleh Streamlit
         template='none', 
-        # Mengubah latar belakang menjadi oranye transparan (Alpha = 0.15)
-        plot_bgcolor='rgba(211, 84, 0, 0.15)',  
-        paper_bgcolor='rgba(211, 84, 0, 0.15)', 
-        margin=dict(l=50, r=40, t=60, b=60),
+        plot_bgcolor='rgba(211, 84, 0, 0.13)',  
+        paper_bgcolor='rgba(211, 84, 0, 0.13)', 
         
-        # Paksa seluruh font global menjadi hitam pekat
+        # 🚨 FIX SPASI KANVAS: Memperluas area bawah (b=100) dan kiri (l=70) agar teks punya ruang napas
+        margin=dict(l=70, r=40, t=60, b=100),
+        
         font=dict(
             color=text_color,
             size=12
         ),
-        
-        # Paksa Judul Grafik berwarna hitam pekat
         title=dict(
             font=dict(color=text_color, size=14, family="Arial", weight="bold")
         ),
-        
-        # Paksa Teks Legenda & Judul Legenda jadi item pekat
         legend=dict(
             font=dict(color=text_color),
             title=dict(font=dict(color=text_color))
         ),
-        
-        # Fix untuk popup hover teks
         hoverlabel=dict(
             bgcolor='#FFFFFF',       
             font_color=text_color,    
@@ -251,30 +243,35 @@ def apply_warm_layout(fig):
         )
     )
     
-    # 🚨 FIX TOTAL PROBLEM IMAGE_CF9B6B.PNG: Paksa warna komponen sumbu X dan Y ke hitam pekat
+    # 🚨 FIX JARAK TULISAN: Ditambah parameter pad=15 agar teks menjauh dari garis grafik
     try:
         fig.update_xaxes(
             showgrid=True, 
-            gridcolor='rgba(211, 84, 0, 0.1)', 
-            tickfont=dict(color=text_color, size=11, family="Arial"), # Huruf Freshman, Senior dll
-            titlefont=dict(color=text_color, size=12, family="Arial", weight="bold"), # Label 'Year_of_Study'
-            linecolor=text_color, # Garis sumbu dasar
+            gridcolor='rgba(211, 84, 0, 0.08)', 
+            tickfont=dict(color=text_color, size=11, family="Arial"), 
+            titlefont=dict(color=text_color, size=12, family="Arial", weight="bold"), 
+            title_standoff=20, # Jarak Judul Sumbu X (Year_of_Study) ke angka ticks
+            linecolor=text_color, 
             ticks="outside",
-            tickcolor=text_color
+            tickcolor=text_color,
+            ticklen=6,
+            tickpad=12          # Jarak teks label (Freshman, Senior, dll) biar menjauh dari garis bawah
         )
         fig.update_yaxes(
             showgrid=True, 
-            gridcolor='rgba(211, 84, 0, 0.1)', 
-            tickfont=dict(color=text_color, size=11, family="Arial"), # Angka 0, 50, 100 dsb
-            titlefont=dict(color=text_color, size=12, family="Arial", weight="bold"), # Label 'count'
+            gridcolor='rgba(211, 84, 0, 0.08)', 
+            tickfont=dict(color=text_color, size=11, family="Arial"), 
+            titlefont=dict(color=text_color, size=12, family="Arial", weight="bold"), 
+            title_standoff=15, # Jarak Judul Sumbu Y (count) ke angka ticks
             linecolor=text_color,
             ticks="outside",
-            tickcolor=text_color
+            tickcolor=text_color,
+            ticklen=6,
+            tickpad=10          # Jarak teks angka (0, 2k, 4k, dll) biar menjauh ke kiri
         )
     except Exception:
         pass
         
-    # Paksa anotasi teks tambahan di dalam chart (jika ada) biar ikutan hitam pekat
     try:
         fig.update_annotations(font=dict(color=text_color))
     except Exception:
@@ -298,7 +295,6 @@ with tab1:
     st.markdown("### 📊 Overview Distribusi Populasi Mahasiswa (Pintar)")
     st.caption("💡 *Sistem Cross-Filtering aktif: Jenjang studi mengikuti filter Bidang Studi. Kebijakan mengikuti kedua filter.*")
     
-    # --- LOGIKA FILTERING KHUSUS UNTUK TAB OVERVIEW ---
     df_major_chart = df.copy()
     
     if selected_major != 'Semua':
@@ -311,9 +307,7 @@ with tab1:
         df_policy_chart = df_policy_chart[df_policy_chart['Major_Category'] == selected_major]
     if selected_year != 'Semua':
         df_policy_chart = df_policy_chart[df_policy_chart['Year_of_Study'] == selected_year]
-    # -------------------------------------------------
 
-    # Membuat 3 kolom sejajar
     col_ov1, col_ov2, col_ov3 = st.columns(3)
     
     with col_ov1:
