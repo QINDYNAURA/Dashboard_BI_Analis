@@ -179,7 +179,7 @@ st.sidebar.markdown(f"Total Variabel: **{df.shape[1]}**")
 st.sidebar.markdown("---")
 st.sidebar.markdown("👤 **Analis Data Dashboard:**")
 st.sidebar.markdown("💡 **Qindy Naura**")
-st.sidebar.markdown("*Divisi Riset & Kebijakan | Konsultan BI*")
+
 
 # Proses Filtering Data Utama (Untuk KPI dan Tab 2-5)
 df_filtered = df.copy()
@@ -290,7 +290,6 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 # --- TAB 1: OVERVIEW DATA (DIUBAH TOTAL MENJADI PERSENTASE %) ---
 with tab1:
     st.markdown("### 📊 Overview Distribusi Populasi Mahasiswa (Proporsi %)")
-    st.caption("💡 *Sistem Cross-Filtering aktif. Angka sumbu Y otomatis dihitung dalam Persentase (%) terhadap total filter saat ini.*")
     
     # Penyiapan basis data filter cross-filtering hierarkis
     df_major_chart = df.copy()
@@ -355,7 +354,6 @@ with tab1:
         fig2_b = apply_warm_layout(fig2_b)
         st.plotly_chart(fig2_b, use_container_width=True)
 
-# --- TAB 2: DAMPAK KE GPA ---
 # --- TAB 2: DAMPAK KE GPA ---
 with tab2:
     st.markdown("### Analisis Penggunaan AI vs Performa Nilai (GPA)")
@@ -521,11 +519,16 @@ with tab5:
         })
         st.table(importance_data)
         
+        # FIX WARNA TEKS: Dibungkus div custom HTML biar tulisan dipaksa hitam pekat (#2C1A11) dan kontras!
         st.markdown("""
-        > 💡 **Key Takeaways untuk BI Report:**
-        > * **Weekly GenAI Hours (88.6%):** Dominasi mutlak! Mahasiswa kategori *Heavy User* berisiko tinggi mengalami *burnout* akademis **3x lipat**.
-        > * **Major & Year (10.3%):** Hanya memberikan pengaruh minor pada tingkat stres mahasiswa.
-        """)
+        <div style="background-color: #F3E5D8; padding: 15px; border-radius: 8px; border-left: 5px solid #E67E22; margin-top: 15px;">
+            <b style="color: #2C1A11; font-size: 1.1rem;">💡 Key Takeaways untuk BI Report:</b><br>
+            <ul style="color: #2C1A11; margin-top: 5px; padding-left: 20px;">
+                <li><b>Weekly GenAI Hours (88.6%):</b> Dominasi mutlak! Mahasiswa kategori <i>Heavy User</i> berisiko tinggi mengalami burnout akademis 3x lipat.</li>
+                <li><b>Major & Year (10.3%):</b> Hanya memberikan pengaruh minor pada tingkat stres mahasiswa.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
         
     with col_img:
         st.markdown("### 🌲 Struktur Pohon Keputusan (Decision Tree)")
@@ -534,3 +537,63 @@ with tab5:
             st.image(img, caption='Model Decision Tree - Klasifikasi Risiko Burnout', use_container_width=True)
         else:
             st.warning("⚠️ File pb5_decision_tree_final_kerangka.png belum di-upload di GitHub utama.")
+
+    # ============================================================
+    # 🚨 BARU J: HASIL PROFILING RIIL (DITAROH DI BAWAHNYA RAFI)
+    # ============================================================
+    st.markdown("---")
+    st.markdown("### 🎯 Hasil Profiling Riil Berdasarkan Prediksi Decision Tree")
+    st.markdown("Berikut adalah karakteristik konkret dari masing-masing kelompok mahasiswa hasil ekstraksi model:")
+    
+    prof1, prof2, prof3 = st.columns(3)
+    
+    with prof1:
+        st.markdown("""
+        <div style="background-color: #E8F8F5; padding: 15px; border-radius: 8px; border-top: 5px solid #2ECC71; min-height: 280px;">
+            <b style="color: #117A65; font-size: 1rem;">🟢 LOW BURNOUT RISK</b><br>
+            <small style="color: #2C1A11;">Jumlah Mahasiswa: <b>2,484 orang</b></small>
+            <hr style="margin: 8px 0; border-color: #2ECC71;">
+            <p style="color: #2C1A11; margin-bottom: 5px; font-size: 0.9rem;">
+                🔹 <b>Rerata GenAI/Minggu:</b> 1.87 Jam<br>
+                🔹 <b>Rerata Belajar Tradisional:</b> 11.82 Jam<br>
+                🔹 <b>Skor Anxiety Ujian:</b> 3.80 / 10<br>
+                🔹 <b>Mayoritas Jurusan:</b> Business<br>
+                🔹 <b>Angkatan Terbanyak:</b> Junior<br>
+                🔹 <b>Segmentasi AI:</b> Light User
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with prof2:
+        st.markdown("""
+        <div style="background-color: #FEF9E7; padding: 15px; border-radius: 8px; border-top: 5px solid #F1C40F; min-height: 280px;">
+            <b style="color: #9A7D0A; font-size: 1rem;">🟡 MEDIUM BURNOUT RISK</b><br>
+            <small style="color: #2C1A11;">Jumlah Mahasiswa: <b>5,582 orang</b></small>
+            <hr style="margin: 8px 0; border-color: #F1C40F;">
+            <p style="color: #2C1A11; margin-bottom: 5px; font-size: 0.9rem;">
+                🔹 <b>Rerata GenAI/Minggu:</b> 6.59 Jam<br>
+                🔹 <b>Rerata Belajar Tradisional:</b> 11.40 Jam<br>
+                🔹 <b>Skor Anxiety Ujian:</b> 4.05 / 10<br>
+                🔹 <b>Mayoritas Jurusan:</b> STEM<br>
+                🔹 <b>Angkatan Terbanyak:</b> Senior<br>
+                🔹 <b>Segmentasi AI:</b> Moderate User
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with prof3:
+        st.markdown("""
+        <div style="background-color: #FDEDEC; padding: 15px; border-radius: 8px; border-top: 5px solid #E74C3C; min-height: 280px;">
+            <b style="color: #78281F; font-size: 1rem;">🔴 HIGH BURNOUT RISK</b><br>
+            <small style="color: #2C1A11;">Jumlah Mahasiswa: <b>1,933 orang</b></small>
+            <hr style="margin: 8px 0; border-color: #E74C3C;">
+            <p style="color: #2C1A11; margin-bottom: 5px; font-size: 0.9rem;">
+                🔹 <b>Rerata GenAI/Minggu:</b> 22.34 Jam<br>
+                🔹 <b>Rerata Belajar Tradisional:</b> 9.97 Jam<br>
+                🔹 <b>Skor Anxiety Ujian:</b> 5.46 / 10<br>
+                🔹 <b>Mayoritas Jurusan:</b> STEM<br>
+                🔹 <b>Angkatan Terbanyak:</b> Freshman<br>
+                🔹 <b>Segmentasi AI:</b> Heavy User
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
