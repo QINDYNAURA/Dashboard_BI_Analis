@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# 🎨 CUSTOM STYLE — THEMA ORANGE & KPI BOXING (SETELAN PREMIUM)
+# 🎨 REVISI CSS TOTAL — KONTRAS TAJAM & VISUALISASI BACKGROUND PUTIH
 # ============================================================
 st.markdown("""
     <style>
@@ -24,13 +24,35 @@ st.markdown("""
         background-color: #FDF6EC;
     }
     
+    /* Semua tulisan reguler, markdown, dan sub-judul di luar wajib HITAM/COKELAT TUA */
+    .stApp p, .stApp span, .stApp label, .stApp h2, .stApp h3 {
+        color: #2C1A11 !important;
+        opacity: 1 !important;
+    }
+    
     /* Background Sidebar Filter */
     [data-testid="stSidebar"] {
         background-color: #FAEBD7;
         border-right: 2px solid #F3D9B1;
     }
     
-    /* Mempercantik Struktur Kotak Tab Navigasi */
+    /* Memaksa text di dalam Sidebar (Header & Filter Label) berwarna HITAM TEGAS */
+    [data-testid="stSidebar"] h2, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
+        color: #2C1A11 !important;
+    }
+    
+    /* 🎨 Mengubah Dropdown Menu (Warna Oranye Gelap, Bukan Item/Putih Silau) */
+    div[data-baseweb="select"] > div {
+        background-color: #E67E22 !important;
+        border: 1px solid #D35400 !important;
+    }
+    
+    /* Mengubah warna teks di dalam kotak dropdown yang terpilih jadi PUTIH biar kontras */
+    div[data-baseweb="select"] span {
+        color: #FFFFFF !important;
+    }
+    
+    /* Struktur Kotak Tab Navigasi */
     .stTabs [data-baseweb="tab-list"] {
         gap: 10px;
         background-color: #F3E5D8;
@@ -43,7 +65,7 @@ st.markdown("""
         border-radius: 8px;
         padding: 8px 20px;
         font-weight: bold;
-        color: #D35400;
+        color: #D35400 !important;
         border: 1px solid #E6A23C;
     }
     
@@ -58,7 +80,7 @@ st.markdown("""
         color: #A04000 !important;
     }
     
-    /* 📦 KUSTOMISASI KOTAK KPI BIAR DIKOTAK-KOTAKIN CONTRAST */
+    /* Kotak KPI */
     [data-testid="stMetric"] {
         background-color: #FFFFFF !important;
         border: 2px solid #E67E22 !important;
@@ -67,14 +89,12 @@ st.markdown("""
         box-shadow: 2px 4px 8px rgba(211, 84, 0, 0.1) !important;
     }
     
-    /* Warna teks label KPI */
     [data-testid="stMetricLabel"] {
         color: #5D4037 !important;
         font-weight: 600 !important;
         font-size: 0.95rem !important;
     }
     
-    /* Warna teks nilai angka utama KPI */
     [data-testid="stMetricValue"] {
         color: #D35400 !important;
         font-weight: bold !important;
@@ -120,7 +140,6 @@ st.sidebar.markdown("**📊 Dataset Info**")
 st.sidebar.markdown(f"Total Records: **{len(df):,}**")
 st.sidebar.markdown(f"Total Variabel: **{df.shape[1]}**")
 st.sidebar.markdown("---")
-# DI SINI TEMPAT NAMA LU SEKARANG, JIRR! RAPI DI AREA FILTER!
 st.sidebar.markdown("👤 **Analis Data Dashboard:**")
 st.sidebar.markdown("💡 **Qindy Naura**")
 st.sidebar.markdown("*Divisi Riset & Kebijakan | Konsultan BI*")
@@ -142,7 +161,7 @@ st.markdown("### Business Intelligence Platform | Divisi Riset & Kebijakan")
 st.markdown("---")
 
 # ============================================================
-# KEY PERFORMANCE INDICATORS (KPI) — KOTAK TIMBUL
+# KEY PERFORMANCE INDICATORS (KPI)
 # ============================================================
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -166,22 +185,32 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "⚠️ Profil Risiko"
 ])
 
+# FUNGSI PEMBANTU UNTUK MEMBUAT BACKGROUND PLOTLY MENJADI PUTIH BERSIH
+def apply_white_layout(fig):
+    fig.update_layout(
+        plot_bgcolor='rgba(255,255,255,1)',
+        paper_bgcolor='rgba(255,255,255,1)',
+        margin=dict(l=40, r=40, t=50, b=40)
+    )
+    return fig
+
 # TAB 1 — OVERVIEW
 with tab1:
     st.subheader("Distribusi Profil Mahasiswa")
     col1, col2 = st.columns(2)
     with col1:
         fig1 = px.pie(df_filtered, names='Major_Category', title='Proporsi Mahasiswa per Jurusan', color_discrete_sequence=px.colors.qualitative.Pastel)
+        fig1 = apply_white_layout(fig1)
         st.plotly_chart(fig1, use_container_width=True)
     with col2:
         fig2 = px.histogram(df_filtered, x='Year_of_Study', title='Jumlah Mahasiswa per Jenjang', color_discrete_sequence=['#E67E22'])
+        fig2 = apply_white_layout(fig2)
         st.plotly_chart(fig2, use_container_width=True)
 
 # TAB 2 — DAMPAK AI
 with tab2:
     st.subheader("Analisis Penggunaan AI vs Performa Nilai (GPA)")
     
-    # BALIK KE ANALISIS BERBOBOT AWAL LU, JIRR!
     st.info("""
     📌 **Hasil Analisis PB1 — Intensitas AI vs Performa Akademik**
     - **Korelasi Pearson:** r = -0.0186 (Sangat Lemah, Negatif, Signifikan)
@@ -194,13 +223,13 @@ with tab2:
     gpa_seg = df_filtered.groupby('AI_User_Segment', observed=True)['GPA_Gap'].mean().reset_index()
     fig3 = px.bar(gpa_seg, x='AI_User_Segment', y='GPA_Gap', title='Rata-rata Perubahan GPA (GPA Gap) Berdasarkan Segmen User',
                   color='AI_User_Segment', color_discrete_sequence=['#2ECC71', '#F1C40F', '#E74C3C'])
+    fig3 = apply_white_layout(fig3)
     st.plotly_chart(fig3, use_container_width=True)
 
 # TAB 3 — KESEHATAN MENTAL
 with tab3:
     st.subheader("Hubungan Kebijakan Kampus dengan Tingkat Stress")
     
-    # BALIK KE ANALISIS BERBOBOT AWAL LU, JIRR!
     st.info("""
     📌 **Hasil Analisis PB3 — Kebijakan Institusi vs Performa & Burnout**
     - **Strictly_Ban** memiliki rata-rata GPA terendah **(3.333)** dan % High Burnout tertinggi **(29.8%)**
@@ -212,13 +241,13 @@ with tab3:
     fig4 = px.histogram(df_filtered, x='Institutional_Policy', color='Burnout_Risk_Level', 
                         title='Tingkat Risiko Burnout Berdasarkan Kebijakan Kampus', barmode='group',
                         color_discrete_map={'Low': '#2ECC71', 'Medium': '#F1C40F', 'High': '#E74C3C'})
+    fig4 = apply_white_layout(fig4)
     st.plotly_chart(fig4, use_container_width=True)
 
 # TAB 4 — RETENSI PENGETAHUAN
 with tab4:
     st.subheader("Korelasi Ketergantungan AI dengan Daya Ingat")
     
-    # BALIK KE ANALISIS BERBOBOT AWAL LU, JIRR!
     st.info("""
     📌 **Hasil Analisis PB2 — AI Dependency vs Skill Retention**
     - **Korelasi Pearson:** r = -0.0843 (Sangat Lemah, Negatif, Signifikan)
@@ -230,13 +259,13 @@ with tab4:
     ret_dep = df_filtered.groupby('Perceived_AI_Dependency')['Skill_Retention_Score'].mean().reset_index()
     fig5 = px.line(ret_dep, x='Perceived_AI_Dependency', y='Skill_Retention_Score', title='Tren Penurunan Skill Retention Berdasarkan Skor Ketergantungan AI', markers=True)
     fig5.update_traces(line_color='#D35400')
+    fig5 = apply_white_layout(fig5)
     st.plotly_chart(fig5, use_container_width=True)
 
 # TAB 5 — PROFIL RISIKO
 with tab5:
     st.subheader("Rekomendasi Profil Risiko (Hasil Model Pohon Keputusan)")
     
-    # BALIK KE ANALISIS BERBOBOT AWAL LU, JIRR!
     st.info("""
     📌 **Hasil Analisis PB5 — Profiling Burnout Risk (Decision Tree)**
     - **Akurasi Model:** 52% | Feature terpenting: **Weekly_GenAI_Hours (88.6%)**
@@ -248,6 +277,6 @@ with tab5:
     
     if os.path.exists('pb5_decision_tree_final_kerangka.png'):
         img = Image.open('pb5_decision_tree_final_kerangka.png')
-        st.image(img, caption='Model Decision Tree - Klasifikasi Risiko Burnout', use_container_width=True)
+        st.image(img, caption='Model Decision Tree - Klasifikasi Risiko Burnout', use_column_width=True)
     else:
         st.warning("⚠️ File pb5_decision_tree_final_kerangka.png belum di-upload di GitHub utama.")
