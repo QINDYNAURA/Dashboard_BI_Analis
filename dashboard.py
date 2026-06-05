@@ -356,10 +356,24 @@ with tab2:
     col1, col2 = st.columns(2)
     with col1:
         gpa_seg = df_filtered.groupby('AI_User_Segment', observed=True)['GPA_Gap'].mean().reset_index()
-        fig3_1 = px.bar(gpa_seg, x='AI_User_Segment', y='GPA_Gap', title='Rata-rata Perubahan GPA (GPA Gap) per Segmen',
-                      color='AI_User_Segment', color_discrete_sequence=['#2ECC71', '#F1C40F', '#E74C3C'])
+        
+        # FIX LOGIKA: Paksa urutan dan petakan warna yang konsisten dengan psikologi warna
+        fig3_1 = px.bar(
+            gpa_seg, 
+            x='AI_User_Segment', 
+            y='GPA_Gap', 
+            title='Rata-rata Perubahan GPA (GPA Gap) per Segmen',
+            color='AI_User_Segment', 
+            color_discrete_map={
+                'Light': '#2ECC71',     # Hijau (Aman/Normal)
+                'Moderate': '#F1C40F',  # Kuning (Optimal/Paling Untung)
+                'Heavy': '#E74C3C'     # Merah (Bahaya/Jeblok)
+            },
+            category_orders={"AI_User_Segment": ["Light", "Moderate", "Heavy"]} # Paksa urut dari kiri ke kanan
+        )
         fig3_1 = apply_warm_layout(fig3_1)
         st.plotly_chart(fig3_1, use_container_width=True)
+        
     with col2:
         fig3_2 = px.scatter(df_filtered.sample(n=1000 if len(df_filtered)>1000 else len(df_filtered)), 
                             x='Weekly_GenAI_Hours', y='Post_Semester_GPA', trendline='ols',
