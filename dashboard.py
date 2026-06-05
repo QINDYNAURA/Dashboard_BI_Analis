@@ -194,7 +194,7 @@ if selected_policy != 'Semua':
 # 5. HEADER DASHBOARD UTAMA
 # ============================================================
 st.title("🎓 Dashboard Analisis Dampak GenAI Terhadap Mahasiswa")
-st.markdown("### Business Intelligence Platform | Divisi Riset & Kebijakan")
+st.markdown("### Business Intelligence Platform ")
 st.markdown("---")
 
 # ============================================================
@@ -292,9 +292,8 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 
 # --- TAB 1: OVERVIEW DATA (FIX CROSS-FILTERING HIERARKIS) ---
 with tab1:
-    st.markdown("### 📊 Overview Distribusi Populasi Mahasiswa (Pintar)")
-    st.caption("💡 *Sistem Cross-Filtering aktif: Jenjang studi mengikuti filter Bidang Studi. Kebijakan mengikuti kedua filter.*")
-    
+    st.markdown("### 📊 Overview Distribusi Populasi Mahasiswa")
+   
     df_major_chart = df.copy()
     
     if selected_major != 'Semua':
