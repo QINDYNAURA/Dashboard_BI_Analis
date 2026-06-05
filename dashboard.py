@@ -353,28 +353,6 @@ with tab3:
         fig4_2 = apply_warm_layout(fig4_2)
         st.plotly_chart(fig4_2, use_container_width=True)
 
-    st.markdown("---")
-    with st.expander("🔬 Uji Statistik Formal: Chi-Square Test of Independence (Validasi Aturan AI vs Stres)"):
-        st.markdown("#### **1. Tabel Kontingensi (Sebaran Jumlah Mahasiswa Riil)**")
-        
-        contingency_data = pd.DataFrame({
-            "Kebijakan Kampus (Policy)": ["Allow With Restrictions", "Banned In Exams", "No Policy", "Strictly Ban"],
-            "Low Risk": ["3,524", "4,122", "3,115", "2,841"],
-            "Medium Risk": ["6,110", "7,255", "5,420", "4,890"],
-            "High Risk": ["3,912", "4,054", "3,180", "4,188"]
-        })
-        
-        # Menggunakan st.dataframe dengan menyembunyikan indeks bawaan agar tampilan bersih putih sesuai tema
-        st.dataframe(contingency_data, use_container_width=True, hide_index=True)
-        
-        st.markdown("#### **2. Hasil Uji Hipotesis Chi-Square**")
-        col_stat1, col_stat2 = st.columns(2)
-        with col_stat1:
-            st.metric(label="Chi-Square Statistic (χ²)", value="153.15")
-        with col_stat2:
-            st.metric(label="P-Value", value="0.0000")
-        st.error("**🚨 KEPUTUSAN STATISTIK:** **Tolak H0 (P-Value = 0.0000 < 0.05).** Hubungan Kebijakan Kampus dan Tingkat Burnout SANGAT SIGNIFIKAN.")
-
 # --- TAB 4: RETENSI ILMU ---
 with tab4:
     st.markdown("### Korelasi Ketergantungan AI dengan Daya Ingat")
@@ -424,27 +402,6 @@ with tab5:
             "Nilai": [0.886175, 0.065356, 0.030942, 0.010440, 0.003067, 0.002522, 0.001500, 0.000000]
         })
         df_importance = df_importance.sort_values(by="Nilai", ascending=False)
-        
-        # Pembuatan Rose Chart / Polar Bar Chart
-        fig_rose = px.bar_polar(
-            df_importance, 
-            r="Nilai", 
-            theta="Fitur",
-            color="Nilai",
-            color_continuous_scale="YlOrRd",
-            template="none"
-        )
-        fig_rose.update_layout(
-            polar=dict(
-                radialaxis=dict(showticklabels=True, ticks="outside", gridcolor="rgba(211, 84, 0, 0.1)"),
-                angularaxis=dict(gridcolor="rgba(211, 84, 0, 0.1)", tickfont=dict(size=10, color="#2C1A11"))
-            ),
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            margin=dict(l=40, r=40, t=30, b=30),
-            coloraxis_showscale=False
-        )
-        st.plotly_chart(fig_rose, use_container_width=True)
         
         # Tabel Referensi Nilai Mutlak
         df_table_show = df_importance.copy()
