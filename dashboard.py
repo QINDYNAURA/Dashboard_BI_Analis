@@ -212,16 +212,18 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# 7. 🎯 LAYOUT MULTI-THEME: LATAR TRANSPARAN ORANYE SOFT + TEKS GELAP
+# 7. 🎯 LAYOUT MULTI-THEME: LATAR TRANSPARAN ORANYE + PAKSA TOTAL TEKS HITAM
 # ============================================================
 def apply_warm_layout(fig):
     fig.update_layout(
-        # Mengubah latar belakang menjadi oranye gelap transparan (Alpha = 0.15)
+        # Reset template bawaan ke white biar gak tabrakan sama dark-mode Streamlit
+        template='plotly_white',
+        # Mengubah latar belakang menjadi oranye transparan (Alpha = 0.15)
         plot_bgcolor='rgba(211, 84, 0, 0.15)',  
         paper_bgcolor='rgba(211, 84, 0, 0.15)', 
         margin=dict(l=50, r=40, t=60, b=50),
         
-        # Paksa seluruh font global menjadi cokelat pekat biar kontras di atas transparan
+        # Paksa seluruh font global menjadi cokelat-hitam pekat biar kontras
         font=dict(
             color='#2C1A11',
             size=12
@@ -232,14 +234,21 @@ def apply_warm_layout(fig):
             font=dict(color='#2C1A11', size=14, family="Arial")
         ),
         
-        # Paksa Teks Legenda biar gak pudar
+        # Paksa Teks Legenda & Judul Legenda biar item pekat
         legend=dict(
             font=dict(color='#2C1A11'),
             title=dict(font=dict(color='#2C1A11'))
+        ),
+        
+        # 🚨 FIX TOTAL UNTUK POPUP TEXT (HOVERLABEL) YANG SERING PUTIH SILUMAN
+        hoverlabel=dict(
+            bgcolor='#FFFFFF',       # Background kotak hover diganti putih bersih
+            font_color='#2C1A11',    # Isinya (seperti 'count', dsb) dipaksa hitam pekat
+            font_size=12
         )
     )
     
-    # Paksa angka-angka sumbu (Ticks) & Judul Sumbu X/Y jadi Cokelat Pekat
+    # Paksa angka-angka sumbu (Ticks) & Judul Sumbu X/Y (Keterangan count dll) jadi Cokelat Pekat
     try:
         fig.update_xaxes(
             showgrid=True, 
