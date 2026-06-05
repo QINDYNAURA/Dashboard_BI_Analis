@@ -246,17 +246,47 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 ])
 
 # --- TAB 1: OVERVIEW DATA ---
+# --- TAB 1: OVERVIEW DATA ---
 with tab1:
-    st.markdown("### Distribusi Profil Mahasiswa")
-    col1, col2 = st.columns(2)
+    st.markdown("### 📊 Overview Distribusi Populasi Mahasiswa (Global)")
+    st.caption("💡 *Catatan: Grafik di bawah ini menampilkan total distribusi keseluruhan data mahasiswa dan sengaja dibuat statis (tidak terpengaruh filter sidebar) sebagai baseline acuan.*")
+    
+    # Membuat 3 kolom sejajar agar layout rapi dan scannable
+    col1, col2, col3 = st.columns(3)
+    
     with col1:
-        fig1 = px.pie(df_filtered, names='Major_Category', title='Proporsi Mahasiswa per Jurusan', color_discrete_sequence=px.colors.qualitative.Pastel)
+        # Menggunakan 'df' (bukan df_filtered) agar data bidang studi tidak berubah saat difilter
+        fig1 = px.pie(
+            df, 
+            names='Major_Category', 
+            title='Distribusi per Bidang Studi', 
+            color_discrete_sequence=px.colors.qualitative.Pastel
+        )
         fig1 = apply_warm_layout(fig1)
         st.plotly_chart(fig1, use_container_width=True)
+        
     with col2:
-        fig2 = px.histogram(df_filtered, x='Year_of_Study', title='Jumlah Mahasiswa per Jenjang', color_discrete_sequence=['#E67E22'])
+        # Menggunakan 'df' (bukan df_filtered) agar data jenjang tidak berubah saat difilter
+        fig2 = px.histogram(
+            df, 
+            x='Year_of_Study', 
+            title='Distribusi per Jenjang Studi', 
+            color_discrete_sequence=['#E67E22'],
+            category_orders={"Year_of_Study": ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"]} # Biar urut dari maba
+        )
         fig2 = apply_warm_layout(fig2)
         st.plotly_chart(fig2, use_container_width=True)
+        
+    with col3:
+        # Menambahkan grafik baru: Distribusi Kebijakan Institusi (menggunakan 'df' agar selaras)
+        fig2_b = px.histogram(
+            df, 
+            x='Institutional_Policy', 
+            title='Distribusi Kebijakan Institusi', 
+            color_discrete_sequence=['#D35400']
+        )
+        fig2_b = apply_warm_layout(fig2_b)
+        st.plotly_chart(fig2_b, use_container_width=True)
 
 # --- TAB 2: DAMPAK KE GPA ---
 with tab2:
