@@ -184,13 +184,13 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# 7. 🎯 FIX MAKSIMAL: PAKSA SEMUA TEKS VISUALISASI JADI HITAM PEKAT
+# 7. 🎯 FIX MAKSIMAL ANTI-PUTIH: PAKSA WARNA TEKS JADI HITAM COKELAT PEKAT
 # ============================================================
 def apply_warm_layout(fig):
     fig.update_layout(
         plot_bgcolor='#FDF6EC',
         paper_bgcolor='#FDF6EC',
-        margin=dict(l=40, r=40, t=60, b=40),
+        margin=dict(l=50, r=40, t=60, b=50),
         # Paksa seluruh font global (Judul, Legenda, Nilai) jadi Hitam Cokelat Pekat
         font=dict(
             color='#2C1A11',
@@ -206,22 +206,29 @@ def apply_warm_layout(fig):
             title=dict(font=dict(color='#2C1A11'))
         )
     )
-    # Berlaku untuk grafik bersumbu (X dan Y)
+    # Paksa teks sumbu X dan Y (Angka & Judul Sumbu) jadi Hitam Cokelat Pekat
     try:
         fig.update_xaxes(
             showgrid=True, 
             gridcolor='#E5D8C5', 
-            tickfont=dict(color='#2C1A11'), 
-            titlefont=dict(color='#2C1A11', size=12)
+            tickfont=dict(color='#2C1A11', size=11), 
+            titlefont=dict(color='#2C1A11', size=12, family="Arial")
         )
         fig.update_yaxes(
             showgrid=True, 
             gridcolor='#E5D8C5', 
-            tickfont=dict(color='#2C1A11'), 
-            titlefont=dict(color='#2C1A11', size=12)
+            tickfont=dict(color='#2C1A11', size=11), 
+            titlefont=dict(color='#2C1A11', size=12, family="Arial")
         )
     except Exception:
         pass
+        
+    # Paksa anotasi teks tambahan di dalam chart (jika ada) biar gak putih
+    try:
+        fig.update_annotations(font=dict(color='#2C1A11'))
+    except Exception:
+        pass
+        
     return fig
 
 # ============================================================
