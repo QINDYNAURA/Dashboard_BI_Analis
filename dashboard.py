@@ -496,93 +496,85 @@ with tab4:
         fig5_2 = apply_warm_layout(fig5_2)
         st.plotly_chart(fig5_2, use_container_width=True)
 
-# --- TAB 5: PROFIL RISIKO ---
-with tab5:
-    st.markdown("### Rekomendasi Profil Risiko & Variabel Penentu Burnout")
-    
-    st.info("""
-    📌 **Hasil Analisis PB5 — Profiling Burnout Risk (Decision Tree Model)**
-    - **Akurasi Model:** 52% | Berhasil mengklasifikasikan mahasiswa ke dalam 3 tingkatan risiko secara optimal.
-    - 💡 **Kesimpulan Utama:** Durasi penggunaan AI per minggu (`Weekly_GenAI_Hours`) mutlak menjadi faktor penentu tunggal terbesar yang memicu kejenuhan atau stres akademis mahasiswa.
-    """)
-    
-    col_table, col_img = st.columns([2, 3])
-    
-    with col_table:
-        st.markdown("### 📊 Hasil Variabel Importance")
-        st.markdown("Berikut adalah kontribusi masing-masing variabel dalam memprediksi tingkat risiko *burnout* mahasiswa:")
-        
-        importance_data = pd.DataFrame({
-            "Nama Variabel / Fitur": ["Weekly_GenAI_Hours", "Major_Category", "Year_of_Study", "Variabel Lainnya"],
-            "Bobot Pengaruh": ["88.6%", "6.2%", "4.1%", "1.1%"],
-            "Tingkat Dampak": ["🚨 Sangat Tinggi (Kritis)", "🟡 Rendah", "🟡 Rendah", "⚪ Sangat Rendah"]
-        })
-        st.table(importance_data)
-        
-    with col_img:
-        st.markdown("### 🌲 Struktur Pohon Keputusan (Decision Tree)")
-        if os.path.exists('pb5_decision_tree_final_kerangka.png'):
-            img = Image.open('pb5_decision_tree_final_kerangka.png')
-            st.image(img, caption='Model Decision Tree - Klasifikasi Risiko Burnout', use_container_width=True)
-        else:
-            st.warning("⚠️ File pb5_decision_tree_final_kerangka.png belum di-upload di GitHub utama.")
+# ===========================================================================
+# SINKRONISASI DECISION TREE UTAMA — SESUAI KERANGKA
+# MODIFIKASI SWEET SPOT OPTIMAL: MAX_DEPTH = 4
+# ===========================================================================
 
-    # ============================================================
-    # 🚨 HASIL PROFILING RIIL BERDASARKAN PREDIKSI DECISION TREE
-    # ============================================================
-    st.markdown("---")
-    st.markdown("### 🎯 Hasil Profiling Riil Berdasarkan Prediksi Decision Tree")
-    st.markdown("Berikut adalah karakteristik konkret dari masing-masing kelompok mahasiswa hasil ekstraksi model:")
-    
-    prof1, prof2, prof3 = st.columns(3)
-    
-    with prof1:
-        st.markdown("""
-        <div style="background-color: #E8F8F5; padding: 15px; border-radius: 8px; border-top: 5px solid #2ECC71; min-height: 280px;">
-            <b style="color: #117A65; font-size: 1rem;">🟢 LOW BURNOUT RISK</b><br>
-            <small style="color: #2C1A11;">Jumlah Mahasiswa: <b>2,484 orang</b></small>
-            <hr style="margin: 8px 0; border-color: #2ECC71;">
-            <p style="color: #2C1A11; margin-bottom: 5px; font-size: 0.9rem;">
-                🔹 <b>Rerata GenAI/Minggu:</b> 1.87 Jam<br>
-                🔹 <b>Rerata Belajar Tradisional:</b> 11.82 Jam<br>
-                🔹 <b>Skor Anxiety Ujian:</b> 3.80 / 10<br>
-                🔹 <b>Mayoritas Jurusan:</b> Business<br>
-                🔹 <b>Angkatan Terbanyak:</b> Junior<br>
-                🔹 <b>Segmentasi AI:</b> Light User
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    with prof2:
-        st.markdown("""
-        <div style="background-color: #FEF9E7; padding: 15px; border-radius: 8px; border-top: 5px solid #F1C40F; min-height: 280px;">
-            <b style="color: #9A7D0A; font-size: 1rem;">🟡 MEDIUM BURNOUT RISK</b><br>
-            <small style="color: #2C1A11;">Jumlah Mahasiswa: <b>5,582 orang</b></small>
-            <hr style="margin: 8px 0; border-color: #F1C40F;">
-            <p style="color: #2C1A11; margin-bottom: 5px; font-size: 0.9rem;">
-                🔹 <b>Rerata GenAI/Minggu:</b> 6.59 Jam<br>
-                🔹 <b>Rerata Belajar Tradisional:</b> 11.40 Jam<br>
-                🔹 <b>Skor Anxiety Ujian:</b> 4.05 / 10<br>
-                🔹 <b>Mayoritas Jurusan:</b> STEM<br>
-                🔹 <b>Angkatan Terbanyak:</b> Senior<br>
-                🔹 <b>Segmentasi AI:</b> Moderate User
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    with prof3:
-        st.markdown("""
-        <div style="background-color: #FDEDEC; padding: 15px; border-radius: 8px; border-top: 5px solid #E74C3C; min-height: 280px;">
-            <b style="color: #78281F; font-size: 1rem;">🔴 HIGH BURNOUT RISK</b><br>
-            <small style="color: #2C1A11;">Jumlah Mahasiswa: <b>1,933 orang</b></small>
-            <hr style="margin: 8px 0; border-color: #E74C3C;">
-            <p style="color: #2C1A11; margin-bottom: 5px; font-size: 0.9rem;">
-                🔹 <b>Rerata GenAI/Minggu:</b> 22.34 Jam<br>
-                🔹 <b>Rerata Belajar Tradisional:</b> 9.97 Jam<br>
-                🔹 <b>Skor Anxiety Ujian:</b> 5.46 / 10<br>
-                🔹 <b>Mayoritas Jurusan:</b> STEM<br>
-                🔹 <b>Angkatan Terbanyak:</b> Freshman<br>
-                🔹 <b>Segmentasi AI:</b> Heavy User
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+import os
+import pandas as pd
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import classification_report
+import matplotlib.pyplot as plt
+
+print("=" * 60)
+print("  MODEL FINAL: DECISION TREE CLASSIFIER")
+print("   (Sesuai Metodologi Kesetimbangan Kelas & Kontrol Overfitting)")
+print("=" * 60)
+
+# 1. Bangun Model Decision Tree Sesuai Batasan Parameter di Kerangka Lu
+model_dt = DecisionTreeClassifier(
+    criterion='entropy',
+    max_depth=4,                 
+    min_samples_split=5,         # Sesuai batas rentang kerangka (2-10)
+    min_samples_leaf=2,          # Sesuai batas rentang kerangka (1-5)
+    random_state=42
+)
+model_dt.fit(X_train, y_train)
+print("  Model Decision Tree (max_depth=4) berhasil dilatih.")
+
+# 2. EVALUASI MODEL: CLASSIFICATION REPORT
+print("\n  CLASSIFICATION REPORT (DECISION TREE):")
+print("-" * 55)
+y_pred_dt = model_dt.predict(X_test)
+print(classification_report(y_test, y_pred_dt))
+
+# 3. FEATURE IMPORTANCE
+print("\n  FEATURE IMPORTANCE (DECISION TREE VERSION):")
+print("-" * 55)
+dt_importance = pd.DataFrame({
+    'Fitur': X_encoded.columns,
+    'Importance': model_dt.feature_importances_
+}).sort_values('Importance', ascending=False)
+print(dt_importance.head(10).to_string(index=False))
+
+# 4. PROFILING OTOMATIS (MURNI HASIL TEBAKAN DECISION TREE LU DARI DATA TESTING)
+print("\n" + "=" * 75)
+print("  HASIL PROFILING RIIL BERDASARKAN PREDIKSI DECISION TREE (DATA TESTING)")
+print("=" * 75)
+
+df_testing_asli = df_clean.loc[X_test.index].copy()
+df_testing_asli['Tebakan_Burnout'] = y_pred_dt
+
+# 🚨 AMAN JIRR: Paksa teks tebakan rapi formatnya ('Low', 'Medium', 'High') biar lolos looping
+df_testing_asli['Tebakan_Burnout'] = df_testing_asli['Tebakan_Burnout'].astype(str).str.strip().str.capitalize()
+
+for kelas in ['Low', 'Medium', 'High']:
+    df_kelas = df_testing_asli[df_testing_asli['Tebakan_Burnout'] == kelas]
+    if not df_kelas.empty:
+        print(f"\n🚨 [ PROFIL KELOMPOK {kelas.upper()} BURNOUT RISK ]")
+        print(f" Jumlah Mahasiswa di Kelompok Ini: {len(df_kelas)} orang (Dari Data Testing)")
+        print("-" * 50)
+        print(f"  🔹 Rata-rata Jam GenAI/Minggu     : {df_kelas['Weekly_GenAI_Hours'].mean():.2f} Jam")
+        print(f"  🔹 Rata-rata Jam Belajar Tradisional: {df_kelas['Traditional_Study_Hours'].mean():.2f} Jam")
+        print(f"  🔹 Rata-rata Skor Anxiety Ujian   : {df_kelas['Anxiety_Level_During_Exams'].mean():.2f} / 10")
+        print(f"  🔹 Mayoritas Berasal dari Jurusan : {df_kelas['Major_Category'].mode()[0]}")
+        print(f"  🔹 Tingkat Angkatan Terbanyak     : {df_kelas['Year_of_Study'].mode()[0]}")
+        print(f"  🔹 Segmentasi Pengguna AI Dominan : {df_kelas['AI_User_Segment'].mode()[0]}")
+        print("=" * 50)
+
+# 5. AUTOMATIC GENERATE GAMBAR UNTUK STREAMLIT
+plt.figure(figsize=(20, 10), dpi=300)
+plot_tree(
+    model_dt,
+    feature_names=X_encoded.columns,
+    class_names=['High', 'Low', 'Medium'],
+    filled=True,
+    rounded=True,
+    fontsize=10
+)
+plt.title("Struktur Decision Tree Final (Max Depth = 4)", fontsize=14, fontweight='bold')
+plt.savefig('pb5_decision_tree_final_kerangka.png', bbox_inches='tight')
+plt.close()
+print("\n🌲 Gambar 'pb5_decision_tree_final_kerangka.png' berhasil di-update otomatis!")
