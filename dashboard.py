@@ -381,10 +381,10 @@ with tab4:
         st.plotly_chart(fig5_2, use_container_width=True)
 
 # ===========================================================================
-# --- TAB 5: PROFIL RISIKO (FIX FULL WARNA INSIGHT & KEMBALI KE ST.TABLE) ---
+# --- TAB 5: PROFIL RISIKO (ROSE CHART & DECISION TREE LAYOUT) -----------
 # ===========================================================================
 with tab5:
-    # 🎨 INJECT CSS KHUSUS BIAR TULISAN INSIGHT DI BAWAH AUTO HITAM/COKELAT PEKAT
+    # Inject CSS untuk memastikan kontras teks pada blockquote (Key Insight)
     st.markdown("""
         <style>
         blockquote {
@@ -411,25 +411,15 @@ with tab5:
     * **Recall Tertinggi (63%):** Model sangat sensitif dan terbukti paling andal dalam mengidentifikasi kelompok mahasiswa di zona **Medium Burnout**.
     """)
     
-    # Kolom Atas: Gambar Pohon vs Tabel Feature Importance Riil
-    col_tree1, col_tree2 = st.columns([3, 2])
+    # Pembagian Kolom: Kiri (Rose Chart) dan Kanan (Decision Tree Gambar Besar)
+    col_left, col_right = st.columns([2, 3])
     
-    with col_tree1:
-        st.markdown("#### 🌲 Pohon Keputusan Klasifikasi (*Decision Tree Structure*)")
-        nama_gambar = 'pb5_decision_tree_final_kerangka.png'
-        if os.path.exists(nama_gambar):
-            image = Image.open(nama_gambar)
-            st.image(image, caption="Struktur Aturan Split Decision Tree (Sweet Spot: Max Depth = 4)", use_container_width=True)
-        else:
-            st.warning(f"⚠️ Gambar '{nama_gambar}' belum ditemukan. Pastikan file gambar dari laptop lu sudah di-upload ke folder yang sama.")
-
-    with col_tree2:
-        st.markdown("#### 📊 Rangkuman Fitur Paling Berpengaruh (*Feature Importance*)")
-        st.markdown("Bobot pengaruh riil variabel dari model *Decision Tree* lu:")
+    with col_left:
+        st.markdown("#### 📊 *Feature Importance (Rose Chart)*")
         
-        # SINKRONISASI DATA LOG TERMINAL LU
-        importance_data = pd.DataFrame({
-            "Variabel / Fitur": [
+        # Penyiapan Data Feature Importance
+        df_importance = pd.DataFrame({
+            "Fitur": [
                 "Weekly_GenAI_Hours", 
                 "Year_of_Study_Graduate", 
                 "Institutional_Policy_Strict_Ban", 
@@ -439,24 +429,56 @@ with tab5:
                 "Perceived_AI_Dependency",
                 "Anxiety_Level_During_Exams"
             ],
-            "Bobot Kontribusi (Importance)": [
-                "0.886175 (88.62%)", 
-                "0.065356 (6.54%)", 
-                "0.030942 (3.09%)", 
-                "0.010440 (1.04%)", 
-                "0.003067 (0.31%)", 
-                "0.002522 (0.25%)", 
-                "0.001500 (0.15%)", 
-                "0.000000 (0.00%)"
-            ]
+            "Nilai": [0.886175, 0.065356, 0.030942, 0.010440, 0.003067, 0.002522, 0.001500, 0.000000]
         })
-        st.table(importance_data)
         
+        # Pengurutan data untuk visualisasi yang rapi
+        df_importance = df_importance.sort_values(by="Nilai", ascending=False)
+        
+        # Pembuatan Rose Chart / Polar Bar Chart menggunakan Plotly
+        fig_rose = px.bar_polar(
+            df_importance, 
+            r="Nilai", 
+            theta="Fitur",
+            color="Nilai",
+            color_continuous_scale="YlOrRd",
+            template="none"
+        )
+        
+        # Penyesuaian layout agar selaras dengan tema dashboard
+        fig_rose.update_layout(
+            polar=dict(
+                radialaxis=dict(showticklabels=True, ticks="outside", gridcolor="rgba(211, 84, 0, 0.1)"),
+                angularaxis=dict(gridcolor="rgba(211, 84, 0, 0.1)", tickfont=dict(size=10, color="#2C1A11"))
+            ),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=40, r=40, t=30, b=30),
+            coloraxis_showscale=False
+        )
+        
+        st.plotly_chart(fig_rose, use_container_width=True)
+        
+        # Tabel Referensi Nilai Mutlak
+        df_table_show = df_importance.copy()
+        df_table_show["Bobot (%)"] = (df_table_show["Nilai"] * 100).map("{:.2f}%".format)
+        st.table(df_table_show[["Fitur", "Bobot (%)"]])
+
+    with col_right:
+        st.markdown("#### 🌲 Pohon Keputusan Klasifikasi (*Decision Tree*)")
+        nama_gambar = 'pb5_decision_tree_final_kerangka.png'
+        if os.path.exists(nama_gambar):
+            image = Image.open(nama_gambar)
+            # Menampilkan gambar dengan ukuran lebih besar sesuai proporsi kolom
+            st.image(image, caption="Struktur Aturan Split Decision Tree (Sweet Spot: Max Depth = 4)", use_container_width=True)
+        else:
+            st.warning(f"⚠️ Gambar '{nama_gambar}' belum ditemukan di direktori aktif.")
+
     st.markdown("---")
     st.markdown("#### 🔍 Karakteristik Profil Hasil Prediksi Model (*Data Testing Profiling*)")
     st.markdown("Tabel komparasi di bawah ini merangkum pola perilaku mahasiswa riil pada masing-masing segmen hasil tebakan model:")
     
-    # DATA PROFILING COMPILATION BERSIH TANPA JUMLAH POPULASI (MURNI KARAKTERISTIK)
+    # Data Profiling Karakteristik Mahasiswa
     profil_risiko_table = pd.DataFrame({
         "Indikator / Karakteristik": [
             "Rata-rata Jam GenAI / Minggu", 
@@ -466,35 +488,14 @@ with tab5:
             "Tingkat Angkatan Terbanyak", 
             "Segmentasi Pengguna AI"
         ],
-        "🟢 LOW RISK": [
-            "1.87 Jam", 
-            "11.82 Jam", 
-            "3.80 / 10", 
-            "Business", 
-            "Junior", 
-            "Light User"
-        ],
-        "🟡 MEDIUM RISK": [
-            "6.59 Jam", 
-            "11.40 Jam", 
-            "4.05 / 10", 
-            "STEM", 
-            "Senior", 
-            "Moderate User"
-        ],
-        "🔴 HIGH RISK": [
-            "22.34 Jam", 
-            "9.97 Jam", 
-            "5.46 / 10", 
-            "STEM", 
-            "Freshman (Maba)", 
-            "Heavy User"
-        ]
+        "🟢 LOW RISK": ["1.87 Jam", "11.82 Jam", "3.80 / 10", "Business", "Junior", "Light User"],
+        "🟡 MEDIUM RISK": ["6.59 Jam", "11.40 Jam", "4.05 / 10", "STEM", "Senior", "Moderate User"],
+        "🔴 HIGH RISK": ["22.34 Jam", "9.97 Jam", "5.46 / 10", "STEM", "Freshman (Maba)", "Heavy User"]
     })
     
     st.table(profil_risiko_table)
     
-    # Teks Insight di bawah ini dijamin bakal hitam pekat & kontras dibaca dosen!
+    # Key Insight dengan format formal dan kontras warna yang diperbaiki
     st.markdown("""
     > 💡 **Key Insight & Analisis Strategis Laporan BI:**
     > * **Lokomotif Utama Risiko:** Berdasarkan perhitungan matematika model, durasi pemakaian **`Weekly_GenAI_Hours` (88.62%)** adalah indikator tunggal yang mendominasi arah pembentukan stres mahasiswa dibandingkan faktor lainnya.
