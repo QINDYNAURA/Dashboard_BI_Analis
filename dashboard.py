@@ -212,62 +212,71 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# 7. 🎯 LAYOUT MULTI-THEME: LATAR TRANSPARAN ORANYE + PAKSA TOTAL TEKS HITAM
+# 7. 🎯 LAYOUT MULTI-THEME: PAKSA TOTAL TEXT SUMBU MENJADI HITAM PEKAT
 # ============================================================
 def apply_warm_layout(fig):
+    # Paksa warna teks dasar yang akan digunakan
+    text_color = '#2C1A11'
+    
     fig.update_layout(
-        # Reset template bawaan ke white biar gak tabrakan sama dark-mode Streamlit
-        template='plotly_white',
+        # Menggunakan template basic bawaan plotly agar tidak ditimpa font putih oleh Streamlit
+        template='none', 
         # Mengubah latar belakang menjadi oranye transparan (Alpha = 0.15)
         plot_bgcolor='rgba(211, 84, 0, 0.15)',  
         paper_bgcolor='rgba(211, 84, 0, 0.15)', 
-        margin=dict(l=50, r=40, t=60, b=50),
+        margin=dict(l=50, r=40, t=60, b=60),
         
-        # Paksa seluruh font global menjadi cokelat-hitam pekat biar kontras
+        # Paksa seluruh font global menjadi hitam pekat
         font=dict(
-            color='#2C1A11',
+            color=text_color,
             size=12
         ),
         
-        # Paksa Judul Grafik agar Berwarna Cokelat Pekat Tegas
+        # Paksa Judul Grafik berwarna hitam pekat
         title=dict(
-            font=dict(color='#2C1A11', size=14, family="Arial")
+            font=dict(color=text_color, size=14, family="Arial", weight="bold")
         ),
         
-        # Paksa Teks Legenda & Judul Legenda biar item pekat
+        # Paksa Teks Legenda & Judul Legenda jadi item pekat
         legend=dict(
-            font=dict(color='#2C1A11'),
-            title=dict(font=dict(color='#2C1A11'))
+            font=dict(color=text_color),
+            title=dict(font=dict(color=text_color))
         ),
         
-        # 🚨 FIX TOTAL UNTUK POPUP TEXT (HOVERLABEL) YANG SERING PUTIH SILUMAN
+        # Fix untuk popup hover teks
         hoverlabel=dict(
-            bgcolor='#FFFFFF',       # Background kotak hover diganti putih bersih
-            font_color='#2C1A11',    # Isinya (seperti 'count', dsb) dipaksa hitam pekat
+            bgcolor='#FFFFFF',       
+            font_color=text_color,    
             font_size=12
         )
     )
     
-    # Paksa angka-angka sumbu (Ticks) & Judul Sumbu X/Y (Keterangan count dll) jadi Cokelat Pekat
+    # 🚨 FIX TOTAL PROBLEM IMAGE_CF9B6B.PNG: Paksa warna komponen sumbu X dan Y ke hitam pekat
     try:
         fig.update_xaxes(
             showgrid=True, 
-            gridcolor='rgba(211, 84, 0, 0.1)', # Garis grid tipis transparan
-            tickfont=dict(color='#2C1A11', size=11, family="Arial"), 
-            titlefont=dict(color='#2C1A11', size=12, family="Arial") 
+            gridcolor='rgba(211, 84, 0, 0.1)', 
+            tickfont=dict(color=text_color, size=11, family="Arial"), # Huruf Freshman, Senior dll
+            titlefont=dict(color=text_color, size=12, family="Arial", weight="bold"), # Label 'Year_of_Study'
+            linecolor=text_color, # Garis sumbu dasar
+            ticks="outside",
+            tickcolor=text_color
         )
         fig.update_yaxes(
             showgrid=True, 
             gridcolor='rgba(211, 84, 0, 0.1)', 
-            tickfont=dict(color='#2C1A11', size=11, family="Arial"), 
-            titlefont=dict(color='#2C1A11', size=12, family="Arial")
+            tickfont=dict(color=text_color, size=11, family="Arial"), # Angka 0, 50, 100 dsb
+            titlefont=dict(color=text_color, size=12, family="Arial", weight="bold"), # Label 'count'
+            linecolor=text_color,
+            ticks="outside",
+            tickcolor=text_color
         )
     except Exception:
         pass
         
-    # Paksa anotasi teks tambahan di dalam chart (jika ada) biar ikutan cokelat pekat
+    # Paksa anotasi teks tambahan di dalam chart (jika ada) biar ikutan hitam pekat
     try:
-        fig.update_annotations(font=dict(color='#2C1A11'))
+        fig.update_annotations(font=dict(color=text_color))
     except Exception:
         pass
         
