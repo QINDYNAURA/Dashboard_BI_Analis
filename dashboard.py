@@ -1,4 +1,3 @@
-%%writefile dashboard.py
 # ============================================================
 # DASHBOARD BI — AI IMPACT ON STUDENTS
 # Analisis Dampak Penggunaan AI Generatif terhadap
