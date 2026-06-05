@@ -432,33 +432,6 @@ with tab5:
             "Nilai": [0.886175, 0.065356, 0.030942, 0.010440, 0.003067, 0.002522, 0.001500, 0.000000]
         })
         
-        # Pengurutan data untuk visualisasi yang rapi
-        df_importance = df_importance.sort_values(by="Nilai", ascending=False)
-        
-        # Pembuatan Rose Chart / Polar Bar Chart menggunakan Plotly
-        fig_rose = px.bar_polar(
-            df_importance, 
-            r="Nilai", 
-            theta="Fitur",
-            color="Nilai",
-            color_continuous_scale="YlOrRd",
-            template="none"
-        )
-        
-        # Penyesuaian layout agar selaras dengan tema dashboard
-        fig_rose.update_layout(
-            polar=dict(
-                radialaxis=dict(showticklabels=True, ticks="outside", gridcolor="rgba(211, 84, 0, 0.1)"),
-                angularaxis=dict(gridcolor="rgba(211, 84, 0, 0.1)", tickfont=dict(size=10, color="#2C1A11"))
-            ),
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            margin=dict(l=40, r=40, t=30, b=30),
-            coloraxis_showscale=False
-        )
-        
-        st.plotly_chart(fig_rose, use_container_width=True)
-        
         # Tabel Referensi Nilai Mutlak
         df_table_show = df_importance.copy()
         df_table_show["Bobot (%)"] = (df_table_show["Nilai"] * 100).map("{:.2f}%".format)
