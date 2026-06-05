@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# 2. 🎨 CUSTOM CSS — MENYATUKAN WARNA & MEMBUAT TEKS KONTRAS
+# 2. 🎨 CUSTOM CSS — FIX BAR ATAS, TAB, & KONTRAS TEXT TOTAL
 # ============================================================
 st.markdown("""
     <style>
@@ -25,13 +25,13 @@ st.markdown("""
         background-color: #FDF6EC;
     }
     
-    /* 🚨 FIX BAR HITAM ATAS: Paksa Header Streamlit Ikut Warna Krem Dasar */
+    /* FIX BAR HITAM ATAS: Paksa Header Streamlit Ikut Warna Krem Dasar */
     [data-testid="stHeader"] {
         background-color: #FDF6EC !important;
     }
     
     /* Semua tulisan reguler luar wajib Hitam/Cokelat Tua biar kontras */
-    .stApp p, .stApp span, .stApp label, .stApp h2, .stApp h3 {
+    .stApp p, .stApp span, .stApp label, .stApp h1, .stApp h2, .stApp h3 {
         color: #2C1A11 !important;
         opacity: 1 !important;
     }
@@ -64,7 +64,7 @@ st.markdown("""
         border-radius: 12px;
     }
     
-    /* 🎯 FIX TEKS TAB: Paksa Tulisan Tab Menjadi Hitam Pekat */
+    /* FIX TEKS TAB: Paksa Tulisan Tab Menjadi Hitam Pekat */
     .stTabs [data-baseweb="tab"] {
         background-color: #FFFFFF;
         border-radius: 8px;
@@ -112,7 +112,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================================
-# 3. MENGANDALKAN ENGINE CACHE UNTUK LOAD DATA
+# 3. LOAD DATA
 # ============================================================
 @st.cache_data
 def load_data():
@@ -184,28 +184,48 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# 7. 🎯 FUNGSI FORMAT VISUAL GRAFIK (LATAR KREM & TEKS HITAM)
+# 7. 🎯 FIX MAKSIMAL: PAKSA SEMUA TEKS VISUALISASI JADI HITAM PEKAT
 # ============================================================
 def apply_warm_layout(fig):
     fig.update_layout(
         plot_bgcolor='#FDF6EC',
         paper_bgcolor='#FDF6EC',
-        margin=dict(l=40, r=40, t=50, b=40),
+        margin=dict(l=40, r=40, t=60, b=40),
+        # Paksa seluruh font global (Judul, Legenda, Nilai) jadi Hitam Cokelat Pekat
         font=dict(
             color='#2C1A11',
             size=12
+        ),
+        # Paksa Judul Grafik agar Berwarna Hitam Pekat
+        title=dict(
+            font=dict(color='#2C1A11', size=14, family="Arial")
+        ),
+        # Paksa Teks Legenda biar ga memutih transparan
+        legend=dict(
+            font=dict(color='#2C1A11'),
+            title=dict(font=dict(color='#2C1A11'))
         )
     )
-    # Gunakan try-except anti error sumbu khusus Pie Chart
+    # Berlaku untuk grafik bersumbu (X dan Y)
     try:
-        fig.update_xaxes(showgrid=True, gridcolor='#E5D8C5', tickfont=dict(color='#2C1A11'), titlefont=dict(color='#2C1A11'))
-        fig.update_yaxes(showgrid=True, gridcolor='#E5D8C5', tickfont=dict(color='#2C1A11'), titlefont=dict(color='#2C1A11'))
+        fig.update_xaxes(
+            showgrid=True, 
+            gridcolor='#E5D8C5', 
+            tickfont=dict(color='#2C1A11'), 
+            titlefont=dict(color='#2C1A11', size=12)
+        )
+        fig.update_yaxes(
+            showgrid=True, 
+            gridcolor='#E5D8C5', 
+            tickfont=dict(color='#2C1A11'), 
+            titlefont=dict(color='#2C1A11', size=12)
+        )
     except Exception:
         pass
     return fig
 
 # ============================================================
-# 8. SISTEM TAB MULTI-DIMENSI (STRUKTUR KODE AWAL YANG LENGKAP)
+# 8. SISTEM TAB MULTI-DIMENSI
 # ============================================================
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📊 Overview Data", 
@@ -217,7 +237,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 
 # --- TAB 1: OVERVIEW DATA ---
 with tab1:
-    st.subheader("Distribusi Profil Mahasiswa")
+    st.markdown("### Distribusi Profil Mahasiswa")
     col1, col2 = st.columns(2)
     with col1:
         fig1 = px.pie(df_filtered, names='Major_Category', title='Proporsi Mahasiswa per Jurusan', color_discrete_sequence=px.colors.qualitative.Pastel)
@@ -230,7 +250,7 @@ with tab1:
 
 # --- TAB 2: DAMPAK KE GPA ---
 with tab2:
-    st.subheader("Analisis Penggunaan AI vs Performa Nilai (GPA)")
+    st.markdown("### Analisis Penggunaan AI vs Performa Nilai (GPA)")
     
     st.info("""
     📌 **Hasil Analisis PB1 — Intensitas AI vs Performa Akademik**
@@ -248,7 +268,6 @@ with tab2:
         fig3_1 = apply_warm_layout(fig3_1)
         st.plotly_chart(fig3_1, use_container_width=True)
     with col2:
-        # Scatter Plot Kodingan Awal Dikembalikan
         fig3_2 = px.scatter(df_filtered.sample(n=1000 if len(df_filtered)>1000 else len(df_filtered)), 
                             x='Weekly_GenAI_Hours', y='Post_Semester_GPA', trendline='ols',
                             title='Scatter Plot: Durasi Belajar AI vs Post GPA (Sampel 1000 data)',
@@ -258,7 +277,7 @@ with tab2:
 
 # --- TAB 3: KESEHATAN MENTAL ---
 with tab3:
-    st.subheader("Hubungan Kebijakan Kampus dengan Tingkat Stress")
+    st.markdown("### Hubungan Kebijakan Kampus dengan Tingkat Stress")
     
     st.info("""
     📌 **Hasil Analisis PB3 — Kebijakan Institusi vs Performa & Burnout**
@@ -274,7 +293,6 @@ with tab3:
         fig4_1 = apply_warm_layout(fig4_1)
         st.plotly_chart(fig4_1, use_container_width=True)
     with col2:
-        # Box Plot Kodingan Awal Dikembalikan
         fig4_2 = px.box(df_filtered, x='Institutional_Policy', y='Anxiety_Level_During_Exams',
                         title='Box Plot: Tingkat Kecemasan Ujian per Kebijakan Kampus',
                         color_discrete_sequence=['#9B59B6'])
@@ -283,7 +301,7 @@ with tab3:
 
 # --- TAB 4: RETENSI ILMU ---
 with tab4:
-    st.subheader("Korelasi Ketergantungan AI dengan Daya Ingat")
+    st.markdown("### Korelasi Ketergantungan AI dengan Daya Ingat")
     
     st.info("""
     📌 **Hasil Analisis PB2 — AI Dependency vs Skill Retention**
@@ -299,16 +317,15 @@ with tab4:
         fig5_1 = apply_warm_layout(fig5_1)
         st.plotly_chart(fig5_1, use_container_width=True)
     with col2:
-        # Heatmap / Density Contour Kodingan Awal Dikembalikan
         fig5_2 = px.density_heatmap(df_filtered, x='Perceived_AI_Dependency', y='Skill_Retention_Score',
                                     title='Kepadatan Distribusi Dependency vs Retention',
                                     color_continuous_scale='Oranges')
         fig5_2 = apply_warm_layout(fig5_2)
         st.plotly_chart(fig5_2, use_container_width=True)
 
-# --- TAB 5: PROFIL RISIKO (DENGAN REVISI FEATURE IMPORTANCE & STRUKTUR 2 KOLOM) ---
+# --- TAB 5: PROFIL RISIKO ---
 with tab5:
-    st.subheader("Rekomendasi Profil Risiko & Variabel Penentu Burnout")
+    st.markdown("### Rekomendasi Profil Risiko & Variabel Penentu Burnout")
     
     st.info("""
     📌 **Hasil Analisis PB5 — Profiling Burnout Risk (Decision Tree Model)**
@@ -316,14 +333,12 @@ with tab5:
     - 💡 **Kesimpulan Utama:** Durasi penggunaan AI per minggu (`Weekly_GenAI_Hours`) mutlak menjadi faktor penentu tunggal terbesar yang memicu kejenuhan atau stres akademis mahasiswa.
     """)
     
-    # Grid layout membagi Tabel Importance (kiri) & Gambar Skema Pohon (kanan)
     col_table, col_img = st.columns([2, 3])
     
     with col_table:
         st.markdown("### 📊 Hasil Variabel Importance")
         st.markdown("Berikut adalah kontribusi masing-masing variabel dalam memprediksi tingkat risiko *burnout* mahasiswa:")
         
-        # Menampilkan data penting berbasis tabel estetik & super jelas
         importance_data = pd.DataFrame({
             "Nama Variabel / Fitur": ["Weekly_GenAI_Hours", "Major_Category", "Year_of_Study", "Variabel Lainnya"],
             "Bobot Pengaruh": ["88.6%", "6.2%", "4.1%", "1.1%"],
@@ -333,8 +348,8 @@ with tab5:
         
         st.markdown("""
         > 💡 **Key Takeaways untuk BI Report:**
-        > * **Weekly GenAI Hours (88.6%):** Dominasi mutlak! Mahasiswa yang masuk kategori *Heavy User* (belajar/tugas pakai AI di atas 15-20 jam/minggu) memiliki risiko mengalami *burnout* akademis **3x lipat lebih tinggi** dibanding user biasa.
-        > * **Major & Year (10.3% gabungan):** Jurusan (seperti STEM) dan tahun angkatan (seperti Maba/Freshman) hanya memberikan sedikit dorongan tambahan pada tingkat stres.
+        > * **Weekly GenAI Hours (88.6%):** Dominasi mutlak! Mahasiswa kategori *Heavy User* berisiko tinggi mengalami *burnout* akademis **3x lipat**.
+        > * **Major & Year (10.3%):** Hanya memberikan pengaruh minor pada tingkat stres mahasiswa.
         """)
         
     with col_img:
