@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# 2. 🎨 CUSTOM CSS — FIX TOTAL TEKS TABEL & BLOCKQUOTE
+# 2. 🎨 CUSTOM CSS — FIX TOTAL TEKS TABEL, BLOCKQUOTE, & THEME KREM
 # ============================================================
 st.markdown("""
     <style>
@@ -36,7 +36,7 @@ st.markdown("""
         opacity: 1 !important;
     }
     
-    /* 🚨 FIX UTAMA UNTUK BLOCKQUOTE (KUTIPAN DI BAWAH TABEL) 🚨 */
+    /* FIX UTAMA UNTUK BLOCKQUOTE (KUTIPAN DI BAWAH TABEL PROFIL RISIKO) */
     blockquote {
         background-color: #F3E5D8 !important; /* Kasih background biar kontras */
         border-left: 5px solid #E67E22 !important; /* Garis oranye di kiri */
@@ -50,7 +50,7 @@ st.markdown("""
         opacity: 1 !important;
     }
     
-    /* 🚨 FIX UTAMA UNTUK WARNA TULISAN DI DALAM TABEL 🚨 */
+    /* FIX UTAMA UNTUK WARNA TULISAN DI DALAM TABEL */
     table {
         color: #2C1A11 !important;
     }
@@ -181,7 +181,7 @@ st.sidebar.markdown("👤 **Analis Data Dashboard:**")
 st.sidebar.markdown("💡 **Qindy Naura**")
 st.sidebar.markdown("*Divisi Riset & Kebijakan | Konsultan BI*")
 
-# Proses Filtering Data
+# Proses Filtering Data Utama (Untuk KPI dan Tab 2-5)
 df_filtered = df.copy()
 if selected_major != 'Semua':
     df_filtered = df_filtered[df_filtered['Major_Category'] == selected_major]
@@ -212,46 +212,12 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# 7. FIX MAKSIMAL PLOTLY
-# ============================================================
-def apply_warm_layout(fig):
-    fig.update_layout(
-        plot_bgcolor='#FDF6EC',
-        paper_bgcolor='#FDF6EC',
-        margin=dict(l=50, r=40, t=60, b=50),
-        font=dict(color='#2C1A11', size=12),
-        title=dict(font=dict(color='#2C1A11', size=14, family="Arial")),
-        legend=dict(font=dict(color='#2C1A11'), title=dict(font=dict(color='#2C1A11')))
-    )
-    try:
-        fig.update_xaxes(showgrid=True, gridcolor='#E5D8C5', tickfont=dict(color='#2C1A11', size=11), titlefont=dict(color='#2C1A11', size=12, family="Arial"))
-        fig.update_yaxes(showgrid=True, gridcolor='#E5D8C5', tickfont=dict(color='#2C1A11', size=11), titlefont=dict(color='#2C1A11', size=12, family="Arial"))
-    except Exception:
-        pass
-    try:
-        fig.update_annotations(font=dict(color='#2C1A11'))
-    except Exception:
-        pass
-    return fig
-
-# ============================================================
-# 8. SISTEM TAB MULTI-DIMENSI
-# ============================================================
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📊 Overview Data", 
-    "🤖 Dampak Ke GPA", 
-    "🧠 Kesehatan Mental", 
-    "📚 Retensi Ilmu", 
-    "⚠️ Profil Risiko"
-])
-
-# ============================================================
 # 7. 🎯 FIX KONTRAST MAKSIMAL: BACKGROUND ORANYE GELAP + TEKS TERANG
 # ============================================================
 def apply_warm_layout(fig):
     fig.update_layout(
         # Mengubah latar belakang bagian dalam dan luar grafik menjadi Oranye Gelap
-        plot_bgcolor='#D35400',  /* Oranye Gelap (Burnt Orange) */
+        plot_bgcolor='#D35400',  # Oranye Gelap (Burnt Orange)
         paper_bgcolor='#D35400', 
         margin=dict(l=50, r=40, t=60, b=50),
         
@@ -263,7 +229,7 @@ def apply_warm_layout(fig):
         
         # Paksa Judul Grafik agar Berwarna Krem Muda/Putih Terang
         title=dict(
-            font=dict(color='#FFF3E0', size=14, family="Arial", weight="bold")
+            font=dict(color='#FFF3E0', size=14, family="Arial")
         ),
         
         # Paksa Teks Legenda biar gak pudar dan kontras di atas oranye gelap
@@ -279,13 +245,13 @@ def apply_warm_layout(fig):
             showgrid=True, 
             gridcolor='#E67E22', # Garis grid pakai warna oranye yang lebih terang sedikit
             tickfont=dict(color='#FFFFFF', size=11, family="Arial"), # Angka sumbu putih bersih
-            titlefont=dict(color='#FFF3E0', size=12, family="Arial", weight="bold") # Judul sumbu krem terang
+            titlefont=dict(color='#FFF3E0', size=12, family="Arial") # Judul sumbu krem terang
         )
         fig.update_yaxes(
             showgrid=True, 
             gridcolor='#E67E22', 
             tickfont=dict(color='#FFFFFF', size=11, family="Arial"), 
-            titlefont=dict(color='#FFF3E0', size=12, family="Arial", weight="bold")
+            titlefont=dict(color='#FFF3E0', size=12, family="Arial")
         )
     except Exception:
         pass
@@ -297,6 +263,74 @@ def apply_warm_layout(fig):
         pass
         
     return fig
+
+# ============================================================
+# 8. SISTEM TAB MULTI-DIMENSI
+# ============================================================
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    "📊 Overview Data", 
+    "🤖 Dampak Ke GPA", 
+    "🧠 Kesehatan Mental", 
+    "📚 Retensi Ilmu", 
+    "⚠️ Profil Risiko"
+])
+
+# --- TAB 1: OVERVIEW DATA (FIX CROSS-FILTERING HIERARKIS) ---
+with tab1:
+    st.markdown("### 📊 Overview Distribusi Populasi Mahasiswa (Pintar)")
+    st.caption("💡 *Sistem Cross-Filtering aktif: Jenjang studi mengikuti filter Bidang Studi. Kebijakan mengikuti kedua filter.*")
+    
+    # --- LOGIKA FILTERING KHUSUS UNTUK TAB OVERVIEW ---
+    # 1. Chart Bidang Studi: Selalu pakai data asli (Statis Total)
+    df_major_chart = df.copy()
+    
+    # 2. Chart Jenjang Studi: HANYA berubah jika Filter Bidang Studi diubah (Filter Jenjang dicuekin)
+    if selected_major != 'Semua':
+        df_year_chart = df[df['Major_Category'] == selected_major]
+    else:
+        df_year_chart = df.copy()
+        
+    # 3. Chart Kebijakan Institusi: Berubah fleksibel jika salah satu atau kedua filter diubah
+    df_policy_chart = df.copy()
+    if selected_major != 'Semua':
+        df_policy_chart = df_policy_chart[df_policy_chart['Major_Category'] == selected_major]
+    if selected_year != 'Semua':
+        df_policy_chart = df_policy_chart[df_policy_chart['Year_of_Study'] == selected_year]
+    # -------------------------------------------------
+
+    # Membuat 3 kolom sejajar
+    col_ov1, col_ov2, col_ov3 = st.columns(3)
+    
+    with col_ov1:
+        fig1 = px.pie(
+            df_major_chart, 
+            names='Major_Category', 
+            title='Distribusi per Bidang Studi', 
+            color_discrete_sequence=px.colors.qualitative.Pastel
+        )
+        fig1 = apply_warm_layout(fig1)
+        st.plotly_chart(fig1, use_container_width=True)
+        
+    with col_ov2:
+        fig2 = px.histogram(
+            df_year_chart, 
+            x='Year_of_Study', 
+            title='Distribusi per Jenjang Studi', 
+            color_discrete_sequence=['#E67E22'],
+            category_orders={"Year_of_Study": ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"]}
+        )
+        fig2 = apply_warm_layout(fig2)
+        st.plotly_chart(fig2, use_container_width=True)
+        
+    with col_ov3:
+        fig2_b = px.histogram(
+            df_policy_chart, 
+            x='Institutional_Policy', 
+            title='Distribusi Kebijakan Institusi', 
+            color_discrete_sequence=['#F1C40F']
+        )
+        fig2_b = apply_warm_layout(fig2_b)
+        st.plotly_chart(fig2_b, use_container_width=True)
 
 # --- TAB 2: DAMPAK KE GPA ---
 with tab2:
@@ -321,7 +355,7 @@ with tab2:
         fig3_2 = px.scatter(df_filtered.sample(n=1000 if len(df_filtered)>1000 else len(df_filtered)), 
                             x='Weekly_GenAI_Hours', y='Post_Semester_GPA', trendline='ols',
                             title='Scatter Plot: Durasi Belajar AI vs Post GPA (Sampel 1000 data)',
-                            color_discrete_sequence=['#E67E22'])
+                            color_discrete_sequence=['#FFFFFF'])
         fig3_2 = apply_warm_layout(fig3_2)
         st.plotly_chart(fig3_2, use_container_width=True)
 
@@ -345,7 +379,7 @@ with tab3:
     with col2:
         fig4_2 = px.box(df_filtered, x='Institutional_Policy', y='Anxiety_Level_During_Exams',
                         title='Box Plot: Tingkat Kecemasan Ujian per Kebijakan Kampus',
-                        color_discrete_sequence=['#9B59B6'])
+                        color_discrete_sequence=['#FFFFFF'])
         fig4_2 = apply_warm_layout(fig4_2)
         st.plotly_chart(fig4_2, use_container_width=True)
 
@@ -363,13 +397,13 @@ with tab4:
     with col1:
         ret_dep = df_filtered.groupby('Perceived_AI_Dependency')['Skill_Retention_Score'].mean().reset_index()
         fig5_1 = px.line(ret_dep, x='Perceived_AI_Dependency', y='Skill_Retention_Score', title='Tren Penurunan Skill Retention', markers=True)
-        fig5_1.update_traces(line_color='#D35400')
+        fig5_1.update_traces(line_color='#FFFFFF')
         fig5_1 = apply_warm_layout(fig5_1)
         st.plotly_chart(fig5_1, use_container_width=True)
     with col2:
         fig5_2 = px.density_heatmap(df_filtered, x='Perceived_AI_Dependency', y='Skill_Retention_Score',
                                     title='Kepadatan Distribusi Dependency vs Retention',
-                                    color_continuous_scale='Oranges')
+                                    color_continuous_scale='YlOrRd')
         fig5_2 = apply_warm_layout(fig5_2)
         st.plotly_chart(fig5_2, use_container_width=True)
 
