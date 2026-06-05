@@ -519,17 +519,6 @@ with tab5:
         })
         st.table(importance_data)
         
-        # FIX WARNA TEKS: Dibungkus div custom HTML biar tulisan dipaksa hitam pekat (#2C1A11) dan kontras!
-        st.markdown("""
-        <div style="background-color: #F3E5D8; padding: 15px; border-radius: 8px; border-left: 5px solid #E67E22; margin-top: 15px;">
-            <b style="color: #2C1A11; font-size: 1.1rem;">💡 Key Takeaways untuk BI Report:</b><br>
-            <ul style="color: #2C1A11; margin-top: 5px; padding-left: 20px;">
-                <li><b>Weekly GenAI Hours (88.6%):</b> Dominasi mutlak! Mahasiswa kategori <i>Heavy User</i> berisiko tinggi mengalami burnout akademis 3x lipat.</li>
-                <li><b>Major & Year (10.3%):</b> Hanya memberikan pengaruh minor pada tingkat stres mahasiswa.</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-        
     with col_img:
         st.markdown("### 🌲 Struktur Pohon Keputusan (Decision Tree)")
         if os.path.exists('pb5_decision_tree_final_kerangka.png'):
@@ -539,7 +528,7 @@ with tab5:
             st.warning("⚠️ File pb5_decision_tree_final_kerangka.png belum di-upload di GitHub utama.")
 
     # ============================================================
-    # 🚨 BARU J: HASIL PROFILING RIIL (DITAROH DI BAWAHNYA RAFI)
+    # 🚨 HASIL PROFILING RIIL BERDASARKAN PREDIKSI DECISION TREE
     # ============================================================
     st.markdown("---")
     st.markdown("### 🎯 Hasil Profiling Riil Berdasarkan Prediksi Decision Tree")
