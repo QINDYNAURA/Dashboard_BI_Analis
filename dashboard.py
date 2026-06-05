@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# 2. 🎨 CUSTOM CSS — FIX WARNA TABEL, BLOCKQUOTE, & THEME KREM
+# 2. 🎨 CUSTOM CSS GLOBAL — TEMA KREM-ORANYE & KONTRAS TEKS
 # ============================================================
 st.markdown("""
     <style>
@@ -25,44 +25,63 @@ st.markdown("""
         background-color: #FDF6EC;
     }
     
-    /* FIX BAR HITAM ATAS: Paksa Header Streamlit Ikut Warna Krem Dasar */
+    /* Header Streamlit Ikut Warna Krem Dasar */
     [data-testid="stHeader"] {
         background-color: #FDF6EC !important;
     }
     
-    /* Semua tulisan reguler luar wajib Hitam/Cokelat Tua biar kontras */
-    .stApp p, .stApp span, .stApp label, .stApp h1, .stApp h2, .stApp h3 {
+    /* Komponen Teks Utama */
+    .stApp p, .stApp span, .stApp label, .stApp h1, .stApp h2, .stApp h3, .stApp h4 {
         color: #2C1A11 !important;
         opacity: 1 !important;
     }
     
-    /* FIX UTAMA UNTUK BLOCKQUOTE (KUTIPAN DI BAWAH TABEL PROFIL RISIKO) */
+    /* Pengaturan Komponen Blockquote (Key Insight) agar Kontras Tinggi */
     blockquote {
         background-color: #F3E5D8 !important; 
         border-left: 5px solid #E67E22 !important; 
-        padding: 10px 15px !important;
-        margin: 10px 0 !important;
+        padding: 15px 20px !important;
+        margin: 15px 0 !important;
         border-radius: 4px !important;
     }
-    blockquote p {
+    blockquote p, blockquote li, blockquote span {
         color: #2C1A11 !important; 
-        font-weight: 500 !important;
+        font-weight: 600 !important;
         opacity: 1 !important;
     }
     
-    /* FIX UTAMA UNTUK KONTRAST TABEL JIKALAU MASIH MEMAKAI ELEMENT HTML */
+    /* Pengaturan Tabel Standar Luar (st.table) */
     table {
         color: #2C1A11 !important;
         width: 100% !important;
+        border-collapse: collapse !important;
     }
     th {
         background-color: #E67E22 !important;
         color: #FFFFFF !important; 
         font-weight: bold !important;
+        padding: 10px !important;
     }
     td {
         color: #2C1A11 !important; 
         background-color: #FFFFFF !important;
+        padding: 10px !important;
+        border: 1px solid #F3E5D8 !important;
+    }
+    
+    /* Isolasi CSS Spesifik Khusus Tabel Dalam Expander Tab 3 */
+    div[data-testid="stExpander"] table {
+        background-color: #FFFFFF !important;
+        color: #2C1A11 !important;
+    }
+    div[data-testid="stExpander"] th {
+        background-color: #E67E22 !important;
+        color: #FFFFFF !important;
+        font-weight: bold !important;
+    }
+    div[data-testid="stExpander"] td {
+        background-color: #FFFFFF !important;
+        color: #2C1A11 !important;
     }
     
     /* Background Sidebar Filter */
@@ -93,7 +112,7 @@ st.markdown("""
         border-radius: 12px;
     }
     
-    /* FIX TEKS TAB: Paksa Tulisan Tab Menjadi Hitam Pekat */
+    /* Paksa Tulisan Tab Menjadi Hitam Pekat */
     .stTabs [data-baseweb="tab"] {
         background-color: #FFFFFF;
         border-radius: 8px;
@@ -103,7 +122,7 @@ st.markdown("""
         border: 1px solid #E6A23C;
     }
     
-    /* Efek Saat Tab Aktif Diklik (Warna Oranye, Tulisan Putih) */
+    /* Efek Saat Tab Aktif Diklik */
     .stTabs [aria-selected="true"] {
         background-color: #E67E22 !important;
         color: white !important;
@@ -111,11 +130,6 @@ st.markdown("""
     
     .stTabs [aria-selected="true"] span {
         color: white !important;
-    }
-    
-    /* Warna Judul Utama H1 */
-    h1 {
-        color: #A04000 !important;
     }
     
     /* Kotak KPI Meter */
@@ -141,7 +155,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================================
-# 3. LOAD DATA
+# 3. DATA ACQUISITION & PREPROCESSING
 # ============================================================
 @st.cache_data
 def load_data():
@@ -159,7 +173,7 @@ def load_data():
 df = load_data()
 
 # ============================================================
-# 4. SIDEBAR PANEL — FILTER INTERAKTIF
+# 4. SIDEBAR PANEL — CONTROL INTERAKTIF
 # ============================================================
 st.sidebar.header("🔧 Filter Analisis")
 st.sidebar.markdown("---")
@@ -181,7 +195,7 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("👤 **Analis Data Dashboard:**")
 st.sidebar.markdown("💡 **Qindy Naura**")
 
-# Proses Filtering Data Utama (Untuk KPI dan Tab 2-5)
+# Filter logic untuk data terikat
 df_filtered = df.copy()
 if selected_major != 'Semua':
     df_filtered = df_filtered[df_filtered['Major_Category'] == selected_major]
@@ -191,10 +205,10 @@ if selected_policy != 'Semua':
     df_filtered = df_filtered[df_filtered['Institutional_Policy'] == selected_policy]
 
 # ============================================================
-# 5. HEADER DASHBOARD UTAMA
+# 5. ENTERPRISE HEADER
 # ============================================================
 st.title("🎓 Dashboard Analisis Dampak GenAI Terhadap Mahasiswa")
-st.markdown("### Business Intelligence Platform | Divisi Riset & Kebijakan")
+st.markdown("### Business Intelligence Platform")
 st.markdown("---")
 
 # ============================================================
@@ -212,7 +226,7 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# 7. LAYOUT WARM THEME — PLOTLY CONFIG
+# 7. VISUALIZATION STANDARD ENVIRONMENT (PLOTLY LAYOUT)
 # ============================================================
 def apply_warm_layout(fig):
     text_color = '#2C1A11'
@@ -244,7 +258,7 @@ def apply_warm_layout(fig):
     return fig
 
 # ============================================================
-# 8. SISTEM TAB MULTI-DIMENSI
+# 8. SISTEM TAB PANEL MULTI-DIMENSI
 # ============================================================
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📊 Overview Data", 
@@ -295,11 +309,9 @@ with tab1:
 with tab2:
     st.markdown("### Analisis Penggunaan AI vs Performa Nilai (GPA)")
     st.info("""
-    📌 **Hasil Analisis PB1 — Intensitas AI vs Performa Akademik**
-    - **Korelasi Pearson:** r = -0.0186 (Sangat Lemah, Negatif, Signifikan)
-    - **Regresi Linear:** R² = 0.0003 → setiap +1 jam/minggu AI, GPA berubah -0.0011 poin
-    - **Moderate User** memiliki rata-rata GPA tertinggi **(3.372)** dan GPA Gap terbesar **(+0.227)**
-    - **Heavy User** justru memiliki GPA terendah **(3.320)** dan GPA Gap terkecil **(+0.173)**
+    📌 **Hasil Analisis PB1 — Intensitas AI vs Performa Academic**
+    * Moderate User memiliki rata-rata GPA tertinggi (3.372) dan GPA Gap terbesar (+0.227).
+    * Heavy User memiliki rata-rata GPA terendah (3.320) dan GPA Gap terkecil (+0.173).
     """)
     col1, col2 = st.columns(2)
     with col1:
@@ -316,13 +328,12 @@ with tab2:
         fig3_2 = apply_warm_layout(fig3_2)
         st.plotly_chart(fig3_2, use_container_width=True)
 
-# --- TAB 3: KESEHATAN MENTAL ---
+# --- TAB 3: KESEHATAN MENTAL (FIX TABEL KONTINGENSI GELAP) ---
 with tab3:
     st.markdown("### Hubungan Kebijakan Kampus dengan Tingkat Stress")
     st.info("""
     📌 **Hasil Analisis PB3 — Kebijakan Institusi vs Performa & Burnout**
-    - **Strictly_Ban** memiliki rata-rata GPA terendah **(3.333)** dan % High Burnout tertinggi **(29.8%)**
-    - **Chi-Square Test:** Menunjukkan adanya hubungan formal yang signifikan antara aturan AI di kampus dengan tingkat kejenuhan mahasiswa.
+    * Aturan Strictly Ban berkorelasi dengan nilai rata-rata GPA terendah (3.333) dan tingkat High Burnout tertinggi (29.8%).
     """)
     col1, col2 = st.columns(2)
     with col1:
@@ -345,13 +356,17 @@ with tab3:
     st.markdown("---")
     with st.expander("🔬 Uji Statistik Formal: Chi-Square Test of Independence (Validasi Aturan AI vs Stres)"):
         st.markdown("#### **1. Tabel Kontingensi (Sebaran Jumlah Mahasiswa Riil)**")
+        
         contingency_data = pd.DataFrame({
             "Kebijakan Kampus (Policy)": ["Allow With Restrictions", "Banned In Exams", "No Policy", "Strictly Ban"],
             "Low Risk": ["3,524", "4,122", "3,115", "2,841"],
             "Medium Risk": ["6,110", "7,255", "5,420", "4,890"],
             "High Risk": ["3,912", "4,054", "3,180", "4,188"]
         })
-        st.dataframe(contingency_data, use_container_width=True)
+        
+        # Menggunakan st.dataframe dengan menyembunyikan indeks bawaan agar tampilan bersih putih sesuai tema
+        st.dataframe(contingency_data, use_container_width=True, hide_index=True)
+        
         st.markdown("#### **2. Hasil Uji Hipotesis Chi-Square**")
         col_stat1, col_stat2 = st.columns(2)
         with col_stat1:
@@ -365,8 +380,7 @@ with tab4:
     st.markdown("### Korelasi Ketergantungan AI dengan Daya Ingat")
     st.info("""
     📌 **Hasil Analisis PB2 — AI Dependency vs Skill Retention**
-    - **Korelasi Pearson:** r = -0.0843 (Sangat Lemah, Negatif, Signifikan)
-    - Skor dependency 1–3 memiliki rata-rata retention **75–76**, skor 8–10 turun ke **63–69**
+    * Skor dependensi tinggi (skor 8–10) menunjukkan penurunan rata-rata retensi ilmu ke angka 63–69.
     """)
     col1, col2 = st.columns(2)
     with col1:
@@ -380,44 +394,22 @@ with tab4:
         fig5_2 = apply_warm_layout(fig5_2)
         st.plotly_chart(fig5_2, use_container_width=True)
 
-# ===========================================================================
-# --- TAB 5: PROFIL RISIKO (ROSE CHART & DECISION TREE LAYOUT) -----------
-# ===========================================================================
+# --- TAB 5: PROFIL RISIKO (ROSE CHART DI KIRI & GAMBAR BESAR DI KANAN) ---
 with tab5:
-    # Inject CSS untuk memastikan kontras teks pada blockquote (Key Insight)
-    st.markdown("""
-        <style>
-        blockquote {
-            background-color: #F3E5D8 !important; 
-            border-left: 5px solid #E67E22 !important; 
-            padding: 15px 20px !important;
-            margin: 15px 0 !important;
-            border-radius: 4px !important;
-        }
-        blockquote p, blockquote li, blockquote span {
-            color: #2C1A11 !important; 
-            font-weight: 600 !important;
-            opacity: 1 !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
     st.markdown("### ⚠️ Segmentasi & Profil Risiko Burnout Mahasiswa")
-    st.markdown("##### Framework Klasifikasi Berbasis *Decision Tree Classifier* (Max Depth = 4)")
+    st.markdown("##### Framework Klasifikasi Berbasis *Decision Tree Classifier*")
     
     st.info("""
     📌 **Evaluasi Keandalan Klasifikasi Model:**
     * **Akurasi Global:** Model berhasil mengklasifikasikan tingkat burnout dengan akurasi **52%** pada data testing.
-    * **Recall Tertinggi (63%):** Model sangat sensitif dan terbukti paling andal dalam mengidentifikasi kelompok mahasiswa di zona **Medium Burnout**.
+    * **Recall Tertinggi (63%):** Model paling andal dalam mengidentifikasi kelompok mahasiswa di zona **Medium Burnout**.
     """)
     
-    # Pembagian Kolom: Kiri (Rose Chart) dan Kanan (Decision Tree Gambar Besar)
     col_left, col_right = st.columns([2, 3])
     
     with col_left:
         st.markdown("#### 📊 *Feature Importance (Rose Chart)*")
         
-        # Penyiapan Data Feature Importance
         df_importance = pd.DataFrame({
             "Fitur": [
                 "Weekly_GenAI_Hours", 
@@ -431,6 +423,28 @@ with tab5:
             ],
             "Nilai": [0.886175, 0.065356, 0.030942, 0.010440, 0.003067, 0.002522, 0.001500, 0.000000]
         })
+        df_importance = df_importance.sort_values(by="Nilai", ascending=False)
+        
+        # Pembuatan Rose Chart / Polar Bar Chart
+        fig_rose = px.bar_polar(
+            df_importance, 
+            r="Nilai", 
+            theta="Fitur",
+            color="Nilai",
+            color_continuous_scale="YlOrRd",
+            template="none"
+        )
+        fig_rose.update_layout(
+            polar=dict(
+                radialaxis=dict(showticklabels=True, ticks="outside", gridcolor="rgba(211, 84, 0, 0.1)"),
+                angularaxis=dict(gridcolor="rgba(211, 84, 0, 0.1)", tickfont=dict(size=10, color="#2C1A11"))
+            ),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=40, r=40, t=30, b=30),
+            coloraxis_showscale=False
+        )
+        st.plotly_chart(fig_rose, use_container_width=True)
         
         # Tabel Referensi Nilai Mutlak
         df_table_show = df_importance.copy()
@@ -442,16 +456,13 @@ with tab5:
         nama_gambar = 'pb5_decision_tree_final_kerangka.png'
         if os.path.exists(nama_gambar):
             image = Image.open(nama_gambar)
-            # Menampilkan gambar dengan ukuran lebih besar sesuai proporsi kolom
             st.image(image, caption="Struktur Aturan Split Decision Tree (Sweet Spot: Max Depth = 4)", use_container_width=True)
         else:
             st.warning(f"⚠️ Gambar '{nama_gambar}' belum ditemukan di direktori aktif.")
 
     st.markdown("---")
-    st.markdown("#### 🔍 Karakteristik Profil Hasil Prediksi Model (*Data Testing Profiling*)")
-    st.markdown("Tabel komparasi di bawah ini merangkum pola perilaku mahasiswa riil pada masing-masing segmen hasil tebakan model:")
+    st.markdown("#### 🔍 Karakteristik Profil Hasil Prediksi Model ")
     
-    # Data Profiling Karakteristik Mahasiswa
     profil_risiko_table = pd.DataFrame({
         "Indikator / Karakteristik": [
             "Rata-rata Jam GenAI / Minggu", 
@@ -465,10 +476,8 @@ with tab5:
         "🟡 MEDIUM RISK": ["6.59 Jam", "11.40 Jam", "4.05 / 10", "STEM", "Senior", "Moderate User"],
         "🔴 HIGH RISK": ["22.34 Jam", "9.97 Jam", "5.46 / 10", "STEM", "Freshman (Maba)", "Heavy User"]
     })
-    
     st.table(profil_risiko_table)
     
-    # Key Insight dengan format formal dan kontras warna yang diperbaiki
     st.markdown("""
     > 💡 **Key Insight & Analisis Strategis Laporan BI:**
     > * **Lokomotif Utama Risiko:** Berdasarkan perhitungan matematika model, durasi pemakaian **`Weekly_GenAI_Hours` (88.62%)** adalah indikator tunggal yang mendominasi arah pembentukan stres mahasiswa dibandingkan faktor lainnya.
