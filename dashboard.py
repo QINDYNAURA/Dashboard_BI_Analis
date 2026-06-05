@@ -212,53 +212,53 @@ with col3:
 st.markdown("---")
 
 # ============================================================
-# 7. 🎯 FIX KONTRAST MAKSIMAL: BACKGROUND ORANYE GELAP + TEKS TERANG
+# 7. 🎯 LAYOUT MULTI-THEME: LATAR TRANSPARAN ORANYE SOFT + TEKS GELAP
 # ============================================================
 def apply_warm_layout(fig):
     fig.update_layout(
-        # Mengubah latar belakang bagian dalam dan luar grafik menjadi Oranye Gelap
-        plot_bgcolor='#D35400',  # Oranye Gelap (Burnt Orange)
-        paper_bgcolor='#D35400', 
+        # Mengubah latar belakang menjadi oranye gelap transparan (Alpha = 0.15)
+        plot_bgcolor='rgba(211, 84, 0, 0.15)',  
+        paper_bgcolor='rgba(211, 84, 0, 0.15)', 
         margin=dict(l=50, r=40, t=60, b=50),
         
-        # Paksa seluruh font global (Judul, Legenda) menjadi Putih Terang biar kontras
+        # Paksa seluruh font global menjadi cokelat pekat biar kontras di atas transparan
         font=dict(
-            color='#FFFFFF',
+            color='#2C1A11',
             size=12
         ),
         
-        # Paksa Judul Grafik agar Berwarna Krem Muda/Putih Terang
+        # Paksa Judul Grafik agar Berwarna Cokelat Pekat Tegas
         title=dict(
-            font=dict(color='#FFF3E0', size=14, family="Arial")
+            font=dict(color='#2C1A11', size=14, family="Arial")
         ),
         
-        # Paksa Teks Legenda biar gak pudar dan kontras di atas oranye gelap
+        # Paksa Teks Legenda biar gak pudar
         legend=dict(
-            font=dict(color='#FFFFFF'),
-            title=dict(font=dict(color='#FFF3E0'))
+            font=dict(color='#2C1A11'),
+            title=dict(font=dict(color='#2C1A11'))
         )
     )
     
-    # Paksa angka-angka sumbu (Ticks) & Judul Sumbu X/Y jadi Putih Terang
+    # Paksa angka-angka sumbu (Ticks) & Judul Sumbu X/Y jadi Cokelat Pekat
     try:
         fig.update_xaxes(
             showgrid=True, 
-            gridcolor='#E67E22', # Garis grid pakai warna oranye yang lebih terang sedikit
-            tickfont=dict(color='#FFFFFF', size=11, family="Arial"), # Angka sumbu putih bersih
-            titlefont=dict(color='#FFF3E0', size=12, family="Arial") # Judul sumbu krem terang
+            gridcolor='rgba(211, 84, 0, 0.1)', # Garis grid tipis transparan
+            tickfont=dict(color='#2C1A11', size=11, family="Arial"), 
+            titlefont=dict(color='#2C1A11', size=12, family="Arial") 
         )
         fig.update_yaxes(
             showgrid=True, 
-            gridcolor='#E67E22', 
-            tickfont=dict(color='#FFFFFF', size=11, family="Arial"), 
-            titlefont=dict(color='#FFF3E0', size=12, family="Arial")
+            gridcolor='rgba(211, 84, 0, 0.1)', 
+            tickfont=dict(color='#2C1A11', size=11, family="Arial"), 
+            titlefont=dict(color='#2C1A11', size=12, family="Arial")
         )
     except Exception:
         pass
         
-    # Paksa anotasi teks tambahan di dalam chart (jika ada) biar ikutan putih terang
+    # Paksa anotasi teks tambahan di dalam chart (jika ada) biar ikutan cokelat pekat
     try:
-        fig.update_annotations(font=dict(color='#FFFFFF'))
+        fig.update_annotations(font=dict(color='#2C1A11'))
     except Exception:
         pass
         
@@ -281,16 +281,13 @@ with tab1:
     st.caption("💡 *Sistem Cross-Filtering aktif: Jenjang studi mengikuti filter Bidang Studi. Kebijakan mengikuti kedua filter.*")
     
     # --- LOGIKA FILTERING KHUSUS UNTUK TAB OVERVIEW ---
-    # 1. Chart Bidang Studi: Selalu pakai data asli (Statis Total)
     df_major_chart = df.copy()
     
-    # 2. Chart Jenjang Studi: HANYA berubah jika Filter Bidang Studi diubah (Filter Jenjang dicuekin)
     if selected_major != 'Semua':
         df_year_chart = df[df['Major_Category'] == selected_major]
     else:
         df_year_chart = df.copy()
         
-    # 3. Chart Kebijakan Institusi: Berubah fleksibel jika salah satu atau kedua filter diubah
     df_policy_chart = df.copy()
     if selected_major != 'Semua':
         df_policy_chart = df_policy_chart[df_policy_chart['Major_Category'] == selected_major]
@@ -355,7 +352,7 @@ with tab2:
         fig3_2 = px.scatter(df_filtered.sample(n=1000 if len(df_filtered)>1000 else len(df_filtered)), 
                             x='Weekly_GenAI_Hours', y='Post_Semester_GPA', trendline='ols',
                             title='Scatter Plot: Durasi Belajar AI vs Post GPA (Sampel 1000 data)',
-                            color_discrete_sequence=['#FFFFFF'])
+                            color_discrete_sequence=['#E67E22'])
         fig3_2 = apply_warm_layout(fig3_2)
         st.plotly_chart(fig3_2, use_container_width=True)
 
@@ -379,7 +376,7 @@ with tab3:
     with col2:
         fig4_2 = px.box(df_filtered, x='Institutional_Policy', y='Anxiety_Level_During_Exams',
                         title='Box Plot: Tingkat Kecemasan Ujian per Kebijakan Kampus',
-                        color_discrete_sequence=['#FFFFFF'])
+                        color_discrete_sequence=['#E67E22'])
         fig4_2 = apply_warm_layout(fig4_2)
         st.plotly_chart(fig4_2, use_container_width=True)
 
@@ -397,7 +394,7 @@ with tab4:
     with col1:
         ret_dep = df_filtered.groupby('Perceived_AI_Dependency')['Skill_Retention_Score'].mean().reset_index()
         fig5_1 = px.line(ret_dep, x='Perceived_AI_Dependency', y='Skill_Retention_Score', title='Tren Penurunan Skill Retention', markers=True)
-        fig5_1.update_traces(line_color='#FFFFFF')
+        fig5_1.update_traces(line_color='#E67E22')
         fig5_1 = apply_warm_layout(fig5_1)
         st.plotly_chart(fig5_1, use_container_width=True)
     with col2:
